@@ -1,0 +1,129 @@
+package com.example.crave
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Bundle
+import android.util.Base64
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.example.crave.databinding.ActivityEditProfileBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import java.io.ByteArrayOutputStream
+
+class EditProfileActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityEditProfileBinding
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+
+    private var imageUri: Uri? = null
+    private var base64ImageString: String = ""
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            imageUri = uri
+            Glide.with(this).load(uri).circleCrop().into(binding.ivEditProfileImage)
+            base64ImageString = encodeImageToBase64(uri)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityEditProfileBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val user = auth.currentUser
+
+        if (user != null) {
+            binding.etEditName.setText(user.displayName)
+
+            db.collection("users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.contains("profileImage")) {
+                        val savedBase64 = document.getString("profileImage") ?: ""
+                        if (savedBase64.isNotEmpty()) {
+                            base64ImageString = savedBase64
+                            val imageBytes = Base64.decode(savedBase64, Base64.DEFAULT)
+                            Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivEditProfileImage)
+                        } else {
+                            loadDefaultImage()
+                        }
+                    } else {
+                        loadDefaultImage()
+                    }
+                }
+        }
+
+        binding.ivEditProfileImage.setOnClickListener { pickImageLauncher.launch("image/*") }
+        binding.tvChangePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
+
+        binding.btnSaveProfile.setOnClickListener {
+            val newName = binding.etEditName.text.toString().trim()
+            val newBio = binding.etEditBio.text.toString().trim()
+
+            if (newName.isEmpty()) {
+                Toast.makeText(this, "Name cannot be empty!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val userMap = hashMapOf(
+                "name" to newName,
+                "bio" to newBio,
+                "profileImage" to base64ImageString
+            )
+
+            val uid = user?.uid
+            if (uid != null) {
+                Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show()
+
+                db.collection("users").document(uid)
+                    .set(userMap)
+                    .addOnSuccessListener {
+                        val profileUpdates = UserProfileChangeRequest.Builder()
+                            .setDisplayName(newName)
+                            .build()
+
+                        user.updateProfile(profileUpdates).addOnCompleteListener {
+                            Toast.makeText(this, "Profile Saved! ✅", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        android.util.Log.e("EditProfile", "Error saving profile", e)
+                    }
+            } else {
+                Toast.makeText(this, "Error: User not found", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnBack.setOnClickListener { finish() }
+    }
+
+    private fun loadDefaultImage() {
+        val defaultAvatar = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
+        Glide.with(this).load(defaultAvatar).circleCrop().into(binding.ivEditProfileImage)
+    }
+
+    private fun encodeImageToBase64(uri: Uri): String {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 250, 250, true)
+            val baos = ByteArrayOutputStream()
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+
+            val imageBytes = baos.toByteArray()
+            Base64.encodeToString(imageBytes, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+}
