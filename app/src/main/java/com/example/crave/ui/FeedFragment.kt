@@ -1,6 +1,5 @@
 package com.example.crave.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.crave.FeedAdapter
 import com.example.crave.Post
-import com.example.crave.PostDetailActivity
 import com.example.crave.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -38,6 +36,14 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                 } else {
                     postRef.update("likedBy", FieldValue.arrayRemove(currentUserId))
                 }
+            },
+            onCommentClicked = { clickedPost ->
+                val bottomSheet = CommentsBottomSheetFragment(clickedPost.id)
+                bottomSheet.show(parentFragmentManager, "CommentsBottomSheet")
+            },
+            onNutritionClicked = { clickedPost ->
+                val bottomSheet = NutritionBottomSheetFragment(clickedPost)
+                bottomSheet.show(parentFragmentManager, "NutritionBottomSheet")
             }
         )
         rvFeed.adapter = feedAdapter
@@ -58,5 +64,4 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                 feedAdapter.updatePosts(postList)
             }
     }
-
 }

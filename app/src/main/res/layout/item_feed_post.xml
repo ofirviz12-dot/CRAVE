@@ -56,7 +56,16 @@
                         android:layout_height="wrap_content"
                         android:text="user_name"
                         android:textColor="#333333"
-                        android:textSize="14sp"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvRestaurantName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Restaurant Name"
+                        android:textColor="#333333"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -111,6 +120,27 @@
                     android:src="@drawable/comment_icon"
                     app:tint="#333333"
                     tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/tvCommentsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="6dp"
+                    android:text="0"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/btnNutrition"
+                    android:layout_width="31dp"
+                    android:layout_height="31dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@android:drawable/ic_menu_info_details"
+                    app:tint="#4CAF50"
+                    tools:ignore="ContentDescription" />
+
             </LinearLayout>
 
             <TextView

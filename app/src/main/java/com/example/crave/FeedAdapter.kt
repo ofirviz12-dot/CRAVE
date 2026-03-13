@@ -14,7 +14,9 @@ import com.google.firebase.auth.FirebaseAuth
 class FeedAdapter(
     private var posts: List<Post>,
     private val onPostClicked: (Post) -> Unit,
-    private val onLikeClicked: (Post, Boolean) -> Unit
+    private val onLikeClicked: (Post, Boolean) -> Unit,
+    private val onCommentClicked: (Post) -> Unit,
+    private val onNutritionClicked: (Post) -> Unit
 ) : RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
@@ -22,12 +24,17 @@ class FeedAdapter(
     class FeedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivUserAvatar: ImageView = itemView.findViewById(R.id.ivUserAvatar)
         val tvUserName: TextView = itemView.findViewById(R.id.tvUserName)
+        val tvRestaurantName: TextView = itemView.findViewById(R.id.tvRestaurantName)
         val tvTimeAgo: TextView = itemView.findViewById(R.id.tvTimeAgo)
         val ivPostImage: ImageView = itemView.findViewById(R.id.ivPostImage)
         val tvCaption: TextView = itemView.findViewById(R.id.tvCaption)
         val tvLikesCount: TextView = itemView.findViewById(R.id.tvLikesCount)
         val btnLike: ImageView = itemView.findViewById(R.id.btnLike)
-        val lottieAnimation: LottieAnimationView = itemView.findViewById(R.id.lottieAnimation)    }
+        val lottieAnimation: LottieAnimationView = itemView.findViewById(R.id.lottieAnimation)
+        val btnComment: ImageView = itemView.findViewById(R.id.btnComment)
+        val tvCommentsCount: TextView = itemView.findViewById(R.id.tvCommentsCount)
+        val btnNutrition: ImageView = itemView.findViewById(R.id.btnNutrition)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_feed_post, parent, false)
@@ -41,6 +48,13 @@ class FeedAdapter(
         holder.tvUserName.text = post.userName
         holder.tvCaption.text = post.caption
         holder.tvTimeAgo.text = if (post.timeAgo.isNotEmpty()) post.timeAgo else "Just now"
+
+        if (post.restaurantName.isNotEmpty()) {
+            holder.tvRestaurantName.text = post.restaurantName
+            holder.tvRestaurantName.visibility = View.VISIBLE
+        } else {
+            holder.tvRestaurantName.visibility = View.GONE
+        }
 
         if (post.imageUrl.isNotEmpty()) {
             try {
@@ -56,8 +70,8 @@ class FeedAdapter(
         }
 
         val isLikedByMe = post.likedBy.contains(currentUserId)
-
         holder.tvLikesCount.text = post.likedBy.size.toString()
+        holder.tvCommentsCount.text = post.commentsCount.toString()
 
         if (!holder.lottieAnimation.isAnimating) {
             if (isLikedByMe) {
@@ -65,6 +79,15 @@ class FeedAdapter(
             } else {
                 holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#333333"))
             }
+        }
+
+        if (post.hasFoodAnalysis) {
+            holder.btnNutrition.visibility = View.VISIBLE
+            holder.btnNutrition.setOnClickListener {
+                onNutritionClicked(post)
+            }
+        } else {
+            holder.btnNutrition.visibility = View.GONE
         }
 
         holder.btnLike.setOnClickListener {
@@ -78,6 +101,10 @@ class FeedAdapter(
                 holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#333333"))
                 onLikeClicked(post, false)
             }
+        }
+
+        holder.btnComment.setOnClickListener {
+            onCommentClicked(post)
         }
     }
 

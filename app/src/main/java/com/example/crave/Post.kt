@@ -7,10 +7,21 @@ data class Post(
     val userId: String = "",
     val userName: String = "",
     val userAvatar: String = "",
+    val restaurantName: String = "",
     val imageUrl: String = "",
     val caption: String = "",
     val timestamp: Date? = null,
-    val likedBy: ArrayList<String> = ArrayList()
+    val likedBy: ArrayList<String> = ArrayList(),
+    val commentsCount: Int = 0,
+
+    val hasFoodAnalysis: Boolean = false, // האם ה-AI ניתח את התמונה הזו?
+    val detectedDish: String = "", // איזה אוכל הוא זיהה (למשל: Creamy Pasta)
+    val ingredients: List<String> = emptyList(), // רשימת המרכיבים
+    val calories: String = "", // קלוריות
+    val protein: String = "", // חלבון
+    val carbs: String = "", // פחמימות
+    val fat: String = "", // שומן
+    val dietLabels: List<String> = emptyList()
 ) {
     val likes: Int get() = likedBy.size
 

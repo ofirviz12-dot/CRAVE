@@ -66,4 +66,7 @@ dependencies {
 
     //lottie
     implementation("com.airbnb.android:lottie:6.3.0")
+
+    //ai api
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 }
