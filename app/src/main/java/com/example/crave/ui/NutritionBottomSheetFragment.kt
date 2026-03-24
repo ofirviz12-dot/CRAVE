@@ -30,17 +30,14 @@ class NutritionBottomSheetFragment(private val post: Post) : BottomSheetDialogFr
         val tvIngredients = view.findViewById<TextView>(R.id.tvIngredients)
         val tvDietLabels = view.findViewById<TextView>(R.id.tvDietLabels)
 
-        // השמת הנתונים מתוך הפוסט
         tvDishName.text = post.detectedDish
         tvCalories.text = post.calories
         tvProtein.text = post.protein
         tvCarbs.text = post.carbs
         tvFat.text = post.fat
 
-        // הופך את רשימת הרכיבים לטקסט ארוך עם פסיקים
         tvIngredients.text = post.ingredients.joinToString(", ")
 
-        // הופך את רשימת הדיאטות לטקסט יפה עם וי ירוק
         if (post.dietLabels.isNotEmpty()) {
             tvDietLabels.text = post.dietLabels.joinToString("   ") { "✔ $it" }
         } else {

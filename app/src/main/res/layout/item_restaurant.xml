@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tvRating"
                 android:text="⭐ 4.8"
                 android:textColor="#333333"
                 android:textSize="12sp"

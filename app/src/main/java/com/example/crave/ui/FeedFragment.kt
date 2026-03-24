@@ -44,6 +44,17 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
             onNutritionClicked = { clickedPost ->
                 val bottomSheet = NutritionBottomSheetFragment(clickedPost)
                 bottomSheet.show(parentFragmentManager, "NutritionBottomSheet")
+            },
+            onUserClicked = { clickedUserId ->
+                val profileFragment = ProfileFragment()
+                val bundle = Bundle()
+                bundle.putString("TARGET_USER_ID", clickedUserId)
+                profileFragment.arguments = bundle
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment)
+                    .addToBackStack(null)
+                    .commit()
             }
         )
         rvFeed.adapter = feedAdapter

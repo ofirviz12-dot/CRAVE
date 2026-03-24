@@ -39,7 +39,6 @@ class AddPostFragment : Fragment() {
             selectedImageUri = uri
             binding.ivSelectedImage.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
 
-            // מפעילים את הכיווץ ברקע כדי שהתמונה תוצג על המסך בלי לקרוס!
             lifecycleScope.launch(Dispatchers.IO) {
                 val safeBitmap = getBitmapFromUri(uri)
                 withContext(Dispatchers.Main) {
@@ -94,14 +93,12 @@ class AddPostFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             var bitmap: Bitmap? = null
             try {
-                // 1. טוענים תמונה מוקטנת מראש למניעת קריסת זיכרון
                 bitmap = getBitmapFromUri(selectedImageUri!!)
                 if (bitmap == null) throw Exception("Failed to load image")
 
-                // 2. דחיסה לפיירבייס תוך שמירה על יחס הממדים (מניעת מתיחה!)
                 val imageBase64 = encodeImageToBase64(bitmap)
 
-                val apiKey = "YOUR_API_KEY"
+                val apiKey = "AIzaSyAA9rTgCm6ripD-dn1lzyeoEQ3rKIEyLYA"
                 val generativeModel = GenerativeModel(
                     modelName = "gemini-2.5-flash",
                     apiKey = apiKey
@@ -139,19 +136,17 @@ class AddPostFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e("AI_ERROR", "Failed: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    // הגנה: אם ה-AI קרס, עדיין נעלה את התמונה כדי לא לתקוע את המשתמש
                     val fallbackBase64 = bitmap?.let { encodeImageToBase64(it) } ?: ""
                     savePostToFirestore(user, caption, restaurant, fallbackBase64, null)
                 }
             } finally {
-                // קריטי למניעת קריסות: מחיקת התמונה מהזיכרון ברגע שסיימנו איתה!
                 bitmap?.recycle()
             }
         }
     }
 
     private fun savePostToFirestore(user: FirebaseUser, caption: String, restaurant: String, imageBase64: String, aiData: JSONObject?) {
-        if (_binding == null) return // הגנה מקריסה במקרה שהמשתמש יצא מהמסך
+        if (_binding == null) return
 
         val newPost = hashMapOf<String, Any>(
             "userId" to user.uid,
@@ -216,14 +211,13 @@ class AddPostFragment : Fragment() {
     private fun getBitmapFromUri(uri: Uri): Bitmap? {
         return try {
             val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true // בודק מימדים בלי להעמיס על הזיכרון
+            options.inJustDecodeBounds = true
             var inputStream = requireContext().contentResolver.openInputStream(uri)
             BitmapFactory.decodeStream(inputStream, null, options)
             inputStream?.close()
 
-            // מחשב פי כמה להקטין
             options.inSampleSize = calculateInSampleSize(options, 500, 500)
-            options.inJustDecodeBounds = false // עכשיו טוען באמת
+            options.inJustDecodeBounds = false
 
             inputStream = requireContext().contentResolver.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream, null, options)

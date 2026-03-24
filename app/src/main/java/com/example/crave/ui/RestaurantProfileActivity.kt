@@ -6,8 +6,11 @@ import android.util.Base64
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.crave.databinding.ActivityRestaurantProfileBinding // וודאי שהשם תואם לשם קובץ ה-XML שלך
+import com.example.crave.databinding.ActivityRestaurantProfileBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RestaurantProfileActivity : AppCompatActivity() {
@@ -25,16 +28,18 @@ class RestaurantProfileActivity : AppCompatActivity() {
         val restCategory = intent.getStringExtra("restCategory") ?: "Food"
         val restAddress = intent.getStringExtra("restAddress") ?: ""
         val restImage = intent.getStringExtra("restImage") ?: ""
+        val restId = intent.getStringExtra("restId") ?: ""
 
         binding.tvProfileName.text = restName
         binding.tvProfileCuisine.text = "$restCategory • $restAddress"
 
         loadImage(restImage)
-
         setupRecyclerView(restName)
 
+        android.util.Log.d("MENU_TEST", "The received Restaurant ID is: $restId")
+
         binding.btnMenu.setOnClickListener {
-            Toast.makeText(this, "Menu feature coming soon!", Toast.LENGTH_SHORT).show()
+            showMenuBottomSheet(restId)
         }
 
         binding.fabAddPost.setOnClickListener {
@@ -51,7 +56,13 @@ class RestaurantProfileActivity : AppCompatActivity() {
                 if (imageUrl.startsWith("http")) {
                     Glide.with(this).load(imageUrl).into(binding.ivHeaderImage)
                 } else {
-                    val imageBytes = Base64.decode(imageUrl, Base64.DEFAULT)
+                    val cleanBase64 = if (imageUrl.contains("base64,")) {
+                        imageUrl.substringAfter("base64,")
+                    } else {
+                        imageUrl
+                    }
+
+                    val imageBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
                     Glide.with(this).asBitmap().load(imageBytes).into(binding.ivHeaderImage)
                 }
             } catch (e: Exception) {
@@ -85,6 +96,41 @@ class RestaurantProfileActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Could not load photos", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun showMenuBottomSheet(restaurantId: String) {
+        if (restaurantId.isEmpty()) {
+            android.util.Log.e("MENU_TEST", "Restaurant ID is empty! Cannot fetch menu.")
+            return
+        }
+
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.dialog_menu, null)
+
+        val rvMenu = view.findViewById<RecyclerView>(R.id.rvBottomSheetMenu)
+        rvMenu.layoutManager = LinearLayoutManager(this)
+
+        bottomSheetDialog.setContentView(view)
+        bottomSheetDialog.show()
+
+        db.collection("restaurants").document(restaurantId).collection("menu")
+            .get()
+            .addOnSuccessListener { documents ->
+                android.util.Log.d("MENU_TEST", "Number of menu items found: ${documents.size()}")
+
+                val menuList = mutableListOf<MenuItem>()
+                for (document in documents) {
+                    val item = document.toObject(MenuItem::class.java).copy(id = document.id)
+                    menuList.add(item)
+                }
+
+                val menuAdapter = MenuAdapter(menuList)
+                rvMenu.adapter = menuAdapter
+            }
+            .addOnFailureListener { exception ->
+                android.util.Log.e("MENU_TEST", "Error loading menu", exception)
+                Toast.makeText(this, "error loading menu", Toast.LENGTH_SHORT).show()
             }
     }
 }

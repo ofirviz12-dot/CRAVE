@@ -17,6 +17,7 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
         val tvRestName: TextView = itemView.findViewById(R.id.tvRestName)
         val tvCuisine: TextView = itemView.findViewById(R.id.tvCuisine)
         val tvDistance: TextView = itemView.findViewById(R.id.tvDistance)
+        val tvRating: TextView? = itemView.findViewById(R.id.tvRating)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
@@ -29,9 +30,11 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
         val context = holder.itemView.context
 
         holder.tvRestName.text = restaurant.name
-        holder.tvCuisine.text = restaurant.category
+        holder.tvCuisine.text = restaurant.description
 
         holder.tvDistance.text = restaurant.address
+
+        holder.tvRating?.text = restaurant.rating.toString()
 
         if (restaurant.imageUrl.isNotEmpty()) {
             try {
@@ -41,7 +44,13 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
                         .placeholder(android.R.drawable.ic_menu_gallery)
                         .into(holder.ivRestImage)
                 } else {
-                    val imageBytes = Base64.decode(restaurant.imageUrl, Base64.DEFAULT)
+                    val cleanBase64 = if (restaurant.imageUrl.contains("base64,")) {
+                        restaurant.imageUrl.substringAfter("base64,")
+                    } else {
+                        restaurant.imageUrl
+                    }
+
+                    val imageBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
                     Glide.with(context)
                         .asBitmap()
                         .load(imageBytes)

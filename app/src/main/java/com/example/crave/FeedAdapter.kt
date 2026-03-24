@@ -16,7 +16,8 @@ class FeedAdapter(
     private val onPostClicked: (Post) -> Unit,
     private val onLikeClicked: (Post, Boolean) -> Unit,
     private val onCommentClicked: (Post) -> Unit,
-    private val onNutritionClicked: (Post) -> Unit
+    private val onNutritionClicked: (Post) -> Unit,
+    private val onUserClicked: (String) -> Unit
 ) : RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
 
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
@@ -67,6 +68,26 @@ class FeedAdapter(
             } catch (e: Exception) {
                 holder.ivPostImage.setImageResource(android.R.drawable.ic_menu_gallery)
             }
+        }
+        if (post.userAvatar.isNotEmpty()) {
+            try {
+                if (post.userAvatar.startsWith("http")) {
+                    Glide.with(context).load(post.userAvatar).into(holder.ivUserAvatar)
+                } else {
+                    val imageBytes = Base64.decode(post.userAvatar, Base64.DEFAULT)
+                    Glide.with(context).asBitmap().load(imageBytes).into(holder.ivUserAvatar
+                    )
+                }
+            } catch (e: Exception) {
+                holder.ivUserAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
+            }
+        }
+        holder.ivUserAvatar.setOnClickListener {
+            onUserClicked(post.userId)
+        }
+
+        holder.tvUserName.setOnClickListener {
+            onUserClicked(post.userId)
         }
 
         val isLikedByMe = post.likedBy.contains(currentUserId)

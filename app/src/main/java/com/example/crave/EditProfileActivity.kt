@@ -13,6 +13,7 @@ import com.example.crave.databinding.ActivityEditProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions // <--- הוספנו את הייבוא הזה
 import java.io.ByteArrayOutputStream
 
 class EditProfileActivity : AppCompatActivity() {
@@ -44,12 +45,19 @@ class EditProfileActivity : AppCompatActivity() {
 
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
-                    if (document != null && document.contains("profileImage")) {
-                        val savedBase64 = document.getString("profileImage") ?: ""
-                        if (savedBase64.isNotEmpty()) {
-                            base64ImageString = savedBase64
-                            val imageBytes = Base64.decode(savedBase64, Base64.DEFAULT)
-                            Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivEditProfileImage)
+                    if (document != null) {
+                        val savedBio = document.getString("bio") ?: ""
+                        binding.etEditBio.setText(savedBio)
+
+                        if (document.contains("profileImage")) {
+                            val savedBase64 = document.getString("profileImage") ?: ""
+                            if (savedBase64.isNotEmpty()) {
+                                base64ImageString = savedBase64
+                                val imageBytes = Base64.decode(savedBase64, Base64.DEFAULT)
+                                Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivEditProfileImage)
+                            } else {
+                                loadDefaultImage()
+                            }
                         } else {
                             loadDefaultImage()
                         }
@@ -82,7 +90,7 @@ class EditProfileActivity : AppCompatActivity() {
                 Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show()
 
                 db.collection("users").document(uid)
-                    .set(userMap)
+                    .set(userMap, SetOptions.merge())
                     .addOnSuccessListener {
                         val profileUpdates = UserProfileChangeRequest.Builder()
                             .setDisplayName(newName)
