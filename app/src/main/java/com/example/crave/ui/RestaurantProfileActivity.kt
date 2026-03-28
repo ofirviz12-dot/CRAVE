@@ -80,7 +80,7 @@ class RestaurantProfileActivity : AppCompatActivity() {
             .addOnSuccessListener { documents ->
                 val postList = mutableListOf<Post>()
                 for (document in documents) {
-                    val post = document.toObject(Post::class.java)
+                    val post = document.toObject(Post::class.java).copy(id = document.id)
                     postList.add(post)
                 }
 
@@ -89,7 +89,10 @@ class RestaurantProfileActivity : AppCompatActivity() {
                     intent.putExtra("userName", selectedPost.userName)
                     intent.putExtra("description", selectedPost.caption)
                     intent.putExtra("imageUrl", selectedPost.imageUrl)
-                    intent.putExtra("likes", selectedPost.likes)
+
+                    intent.putExtra("postId", selectedPost.id)
+                    intent.putExtra("restaurantName", selectedPost.restaurantName)
+
                     startActivity(intent)
                 }
                 binding.rvUserPhotos.adapter = adapter

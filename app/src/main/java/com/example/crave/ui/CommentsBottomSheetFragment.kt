@@ -20,7 +20,7 @@ import com.google.firebase.firestore.Query
 class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialogFragment() {
 
     private lateinit var commentAdapter: CommentAdapter
-    private lateinit var rvComments: RecyclerView // <--- הגדרנו את הרשימה ברמת המחלקה
+    private lateinit var rvComments: RecyclerView
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
@@ -38,15 +38,12 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
         val etNewComment = view.findViewById<EditText>(R.id.etNewComment)
         val btnSendComment = view.findViewById<ImageView>(R.id.btnSendComment)
 
-        // הכנת הרשימה
         commentAdapter = CommentAdapter(emptyList())
         rvComments.layoutManager = LinearLayoutManager(context)
         rvComments.adapter = commentAdapter
 
-        // קריאה לפונקציה שמביאה תגובות מפיירבייס
         loadComments()
 
-        // מה קורה כשלוחצים על כפתור השליחה
         btnSendComment.setOnClickListener {
             val text = etNewComment.text.toString().trim()
             if (text.isNotEmpty()) {
@@ -74,10 +71,8 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
                     }
                 }
 
-                // עדכון האדפטר
                 commentAdapter.updateComments(commentsList)
 
-                // התיקון: נותנים לרשימה פקודה לגלול למטה רק אחרי שהיא סיימה להתעדכן!
                 if (commentsList.isNotEmpty()) {
                     rvComments.post {
                         rvComments.smoothScrollToPosition(commentsList.size - 1)

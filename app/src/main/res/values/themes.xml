@@ -15,4 +15,13 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="RoundedBottomCorners" parent="">
+        <item name="cornerSizeBottomLeft">30dp</item>
+        <item name="cornerSizeBottomRight">30dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="backgroundColor">@android:color/transparent</item>
+    </style>
 </resources>

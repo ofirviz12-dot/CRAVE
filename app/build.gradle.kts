@@ -1,3 +1,4 @@
+import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.crave" // וודאי שזה ה-namespace הנכון שלך
+    namespace = "com.example.crave"
     compileSdk = 34
 
     defaultConfig {
@@ -16,6 +17,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(localPropertiesFile.inputStream())
+        }
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY")}\"")
+        }
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

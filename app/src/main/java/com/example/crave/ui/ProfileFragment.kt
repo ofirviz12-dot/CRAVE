@@ -137,6 +137,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             intent.putExtra("description", clickedPost.caption)
             intent.putExtra("imageUrl", clickedPost.imageUrl)
             intent.putExtra("likes", clickedPost.likedBy.size)
+            intent.putExtra("postId", clickedPost.id)
+            intent.putExtra("restaurantName", clickedPost.restaurantName)
             startActivity(intent)
         }
     }

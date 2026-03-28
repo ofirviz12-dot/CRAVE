@@ -20,6 +20,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="12dp">
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/returnarrow"
+                app:tint="#333333"
+                tools:ignore="ContentDescription" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -27,6 +36,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="12dp">
+
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="40dp"
@@ -75,7 +85,11 @@
                         android:text="2h ago"
                         android:textColor="#9E9E9E"
                         android:textSize="12sp" />
+
+
                 </LinearLayout>
+
+
             </LinearLayout>
 
             <ImageView
@@ -98,7 +112,6 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/like_empty_icon"
-                    app:tint="#333333"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -114,10 +127,10 @@
 
                 <ImageView
                     android:id="@+id/btnComment"
-                    android:layout_width="31dp"
-                    android:layout_height="31dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/comment_icon"
+                    android:src="@drawable/chat"
                     app:tint="#333333"
                     tools:ignore="ContentDescription" />
 
@@ -134,10 +147,10 @@
 
                 <ImageView
                     android:id="@+id/btnNutrition"
-                    android:layout_width="31dp"
-                    android:layout_height="31dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_marginStart="16dp"
-                    android:src="@android:drawable/ic_menu_info_details"
+                    android:src="@drawable/nutrition"
                     app:tint="#4CAF50"
                     tools:ignore="ContentDescription" />
 

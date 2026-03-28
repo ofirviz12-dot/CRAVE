@@ -4,26 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#e9e8e3"
         android:paddingBottom="32dp">
 
-        <TextView
-            android:id="@+id/tvWalletTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="My Wallet"
-            android:textColor="#333333"
-            android:textSize="24sp"
-            android:textStyle="bold"
+        <ImageView
+            android:id="@+id/ivWalletTitle"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:src="@drawable/mywalletb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+        </ImageView>
+
+
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardProgress"
@@ -33,9 +34,10 @@
             android:layout_marginTop="24dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
+            android:backgroundTint="#6DBE47"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWalletTitle">
+            app:layout_constraintTop_toBottomOf="@id/ivWalletTitle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="0/10"
-                        android:textColor="#7EBE8D"
+                        android:textColor="#FFFF"
                         android:textSize="20sp"
                         android:textStyle="bold" />
                 </FrameLayout>
@@ -84,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="10 Likes = 1 Coin!"
-                    android:textColor="#757575"
+                    android:textColor="#FFFF"
                     android:textSize="14sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -97,6 +99,8 @@
             android:layout_marginTop="24dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
+            android:backgroundTint="#6DBE47"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardProgress">
@@ -121,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="Available Coins"
-                    android:textColor="#757575"
+                    android:textColor="#FFFF"
                     android:textSize="14sp" />
 
                 <TextView
@@ -129,7 +133,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#7EBE8D"
+                    android:textColor="#FFFF"
                     android:textSize="32sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -140,7 +144,7 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_margin="32dp"
-            android:backgroundTint="#CC6FCD"
+            android:backgroundTint="#237414"
             android:text="Buy Now !"
             android:textColor="@android:color/white"
             android:textSize="18sp"

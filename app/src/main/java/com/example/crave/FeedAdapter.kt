@@ -35,6 +35,7 @@ class FeedAdapter(
         val btnComment: ImageView = itemView.findViewById(R.id.btnComment)
         val tvCommentsCount: TextView = itemView.findViewById(R.id.tvCommentsCount)
         val btnNutrition: ImageView = itemView.findViewById(R.id.btnNutrition)
+        val btnBack: ImageView = itemView.findViewById(R.id.btnBack)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
@@ -78,9 +79,12 @@ class FeedAdapter(
                     Glide.with(context).asBitmap().load(imageBytes).into(holder.ivUserAvatar
                     )
                 }
+
             } catch (e: Exception) {
                 holder.ivUserAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
             }
+        } else {
+            holder.ivUserAvatar.setImageResource(R.drawable.person_ic)
         }
         holder.ivUserAvatar.setOnClickListener {
             onUserClicked(post.userId)
@@ -89,17 +93,20 @@ class FeedAdapter(
         holder.tvUserName.setOnClickListener {
             onUserClicked(post.userId)
         }
+        holder.btnBack.visibility = View.GONE
 
         val isLikedByMe = post.likedBy.contains(currentUserId)
         holder.tvLikesCount.text = post.likedBy.size.toString()
         holder.tvCommentsCount.text = post.commentsCount.toString()
 
         if (!holder.lottieAnimation.isAnimating) {
+            holder.lottieAnimation.progress = 0f
             if (isLikedByMe) {
-                holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#E91E63"))
+                holder.btnLike.clearColorFilter()
+                holder.btnLike.setImageResource(R.drawable.like_red_icon)
             } else {
-                holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#333333"))
-            }
+                holder.btnLike.clearColorFilter()
+                holder.btnLike.setImageResource(R.drawable.like_empty_icon)            }
         }
 
         if (post.hasFoodAnalysis) {
@@ -115,11 +122,14 @@ class FeedAdapter(
             if (holder.lottieAnimation.isAnimating) return@setOnClickListener
 
             if (!isLikedByMe) {
-                holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#E91E63"))
+                holder.btnLike.setImageResource(R.drawable.like_red_icon)
+                holder.lottieAnimation.progress = 0f
                 holder.lottieAnimation.playAnimation()
                 onLikeClicked(post, true)
             } else {
-                holder.btnLike.setColorFilter(android.graphics.Color.parseColor("#333333"))
+                holder.btnLike.setImageResource(R.drawable.like_empty_icon)
+                holder.lottieAnimation.cancelAnimation()
+                holder.lottieAnimation.progress = 0f
                 onLikeClicked(post, false)
             }
         }

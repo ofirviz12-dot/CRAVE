@@ -23,6 +23,7 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
 
         val rvFeed = view.findViewById<RecyclerView>(R.id.rvFeed)
         rvFeed.layoutManager = LinearLayoutManager(context)
+        (rvFeed.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
         val db = FirebaseFirestore.getInstance()
 
         feedAdapter = FeedAdapter(emptyList(),

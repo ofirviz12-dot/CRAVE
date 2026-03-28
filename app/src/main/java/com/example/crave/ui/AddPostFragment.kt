@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import com.example.crave.BuildConfig
 
 class AddPostFragment : Fragment() {
 
@@ -98,7 +99,7 @@ class AddPostFragment : Fragment() {
 
                 val imageBase64 = encodeImageToBase64(bitmap)
 
-                val apiKey = "AIzaSyAA9rTgCm6ripD-dn1lzyeoEQ3rKIEyLYA"
+                val apiKey = BuildConfig.GEMINI_API_KEY
                 val generativeModel = GenerativeModel(
                     modelName = "gemini-2.5-flash",
                     apiKey = apiKey
@@ -148,64 +149,77 @@ class AddPostFragment : Fragment() {
     private fun savePostToFirestore(user: FirebaseUser, caption: String, restaurant: String, imageBase64: String, aiData: JSONObject?) {
         if (_binding == null) return
 
-        val newPost = hashMapOf<String, Any>(
-            "userId" to user.uid,
-            "userName" to (user.displayName ?: "Anonymous"),
-            "restaurantName" to restaurant,
-            "caption" to caption,
-            "imageUrl" to imageBase64,
-            "timestamp" to java.util.Date(),
-            "likedBy" to ArrayList<String>(),
-            "commentsCount" to 0
-        )
+        db.collection("users").document(user.uid).get().addOnSuccessListener { document ->
 
-        if (aiData != null) {
-            newPost["hasFoodAnalysis"] = true
-            newPost["detectedDish"] = aiData.optString("detectedDish", "Unknown Dish")
-            newPost["calories"] = aiData.optString("calories", "N/A")
-            newPost["protein"] = aiData.optString("protein", "N/A")
-            newPost["carbs"] = aiData.optString("carbs", "N/A")
-            newPost["fat"] = aiData.optString("fat", "N/A")
+            val savedAvatar = document?.getString("profileImage") ?: ""
+            val updatedName = document?.getString("name") ?: user.displayName ?: "Anonymous"
 
-            val ingredientsList = ArrayList<String>()
-            val ingredientsArray = aiData.optJSONArray("ingredients")
-            if (ingredientsArray != null) {
-                for (i in 0 until ingredientsArray.length()) {
-                    ingredientsList.add(ingredientsArray.getString(i))
+            val newPost = hashMapOf<String, Any>(
+                "userId" to user.uid,
+                "userName" to updatedName,
+                "userAvatar" to savedAvatar,
+                "restaurantName" to restaurant,
+                "caption" to caption,
+                "imageUrl" to imageBase64,
+                "timestamp" to java.util.Date(),
+                "likedBy" to ArrayList<String>(),
+                "commentsCount" to 0
+            )
+
+            if (aiData != null) {
+                newPost["hasFoodAnalysis"] = true
+                newPost["detectedDish"] = aiData.optString("detectedDish", "Unknown Dish")
+                newPost["calories"] = aiData.optString("calories", "N/A")
+                newPost["protein"] = aiData.optString("protein", "N/A")
+                newPost["carbs"] = aiData.optString("carbs", "N/A")
+                newPost["fat"] = aiData.optString("fat", "N/A")
+
+                val ingredientsList = ArrayList<String>()
+                val ingredientsArray = aiData.optJSONArray("ingredients")
+                if (ingredientsArray != null) {
+                    for (i in 0 until ingredientsArray.length()) {
+                        ingredientsList.add(ingredientsArray.getString(i))
+                    }
                 }
-            }
-            newPost["ingredients"] = ingredientsList
+                newPost["ingredients"] = ingredientsList
 
-            val dietList = ArrayList<String>()
-            val dietArray = aiData.optJSONArray("dietLabels")
-            if (dietArray != null) {
-                for (i in 0 until dietArray.length()) {
-                    dietList.add(dietArray.getString(i))
+                val dietList = ArrayList<String>()
+                val dietArray = aiData.optJSONArray("dietLabels")
+                if (dietArray != null) {
+                    for (i in 0 until dietArray.length()) {
+                        dietList.add(dietArray.getString(i))
+                    }
                 }
+                newPost["dietLabels"] = dietList
+            } else {
+                newPost["hasFoodAnalysis"] = false
             }
-            newPost["dietLabels"] = dietList
-        } else {
-            newPost["hasFoodAnalysis"] = false
+
+            db.collection("posts")
+                .add(newPost)
+                .addOnSuccessListener {
+                    if (_binding != null) {
+                        Toast.makeText(context, "Post uploaded successfully! 🍔", Toast.LENGTH_SHORT).show()
+                        binding.etCaption.text.clear()
+                        binding.etRestaurantName.text.clear()
+                        binding.ivSelectedImage.setImageURI(null)
+                        // selectedImageUri = null
+                        binding.btnPost.isEnabled = true
+                    }
+                }
+                .addOnFailureListener { e ->
+                    if (_binding != null) {
+                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                        binding.btnPost.isEnabled = true
+                    }
+                }
+
+        }.addOnFailureListener { e ->
+            if (_binding != null) {
+                Toast.makeText(context, "Failed to load user profile", Toast.LENGTH_SHORT).show()
+                binding.btnPost.isEnabled = true
+            }
         }
-
-        db.collection("posts")
-            .add(newPost)
-            .addOnSuccessListener {
-                if (_binding != null) {
-                    Toast.makeText(context, "Post uploaded successfully! 🍔", Toast.LENGTH_SHORT).show()
-                    binding.etCaption.text.clear()
-                    binding.etRestaurantName.text.clear()
-                    binding.ivSelectedImage.setImageURI(null)
-                    selectedImageUri = null
-                    binding.btnPost.isEnabled = true
-                }
-            }
-            .addOnFailureListener { e ->
-                if (_binding != null) {
-                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    binding.btnPost.isEnabled = true
-                }
-            }
     }
 
     private fun getBitmapFromUri(uri: Uri): Bitmap? {
