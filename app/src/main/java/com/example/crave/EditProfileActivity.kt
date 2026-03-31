@@ -75,7 +75,7 @@ class EditProfileActivity : AppCompatActivity() {
             val newBio = binding.etEditBio.text.toString().trim()
 
             if (newName.isEmpty()) {
-                Toast.makeText(this, "Name cannot be empty!", Toast.LENGTH_SHORT).show()
+                showCustomPopup("Name cannot be empty!")
                 return@setOnClickListener
             }
 
@@ -87,7 +87,7 @@ class EditProfileActivity : AppCompatActivity() {
 
             val uid = user?.uid
             if (uid != null) {
-                Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show()
+                showCustomPopup("saving")
 
                 db.collection("users").document(uid)
                     .set(userMap, SetOptions.merge())
@@ -97,16 +97,16 @@ class EditProfileActivity : AppCompatActivity() {
                             .build()
 
                         user.updateProfile(profileUpdates).addOnCompleteListener {
-                            Toast.makeText(this, "Profile Saved! ✅", Toast.LENGTH_SHORT).show()
+                            showCustomPopup("Profile Saved")
                             finish()
                         }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        showCustomPopup("Error: ${e.message}")
                         android.util.Log.e("EditProfile", "Error saving profile", e)
                     }
             } else {
-                Toast.makeText(this, "Error: User not found", Toast.LENGTH_SHORT).show()
+                showCustomPopup("Error: User not found")
             }
         }
 
@@ -133,5 +133,20 @@ class EditProfileActivity : AppCompatActivity() {
             e.printStackTrace()
             ""
         }
+    }
+    private fun showCustomPopup(message: String) {
+        val dialog = android.app.Dialog(this)
+        dialog.setContentView(R.layout.custom_popup)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvMessage = dialog.findViewById<android.widget.TextView>(R.id.tvPopupMessage)
+        tvMessage.text = message
+        dialog.show()
+
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            if (dialog.isShowing) {
+                dialog.dismiss()
+            }
+        }, 2000)
     }
 }

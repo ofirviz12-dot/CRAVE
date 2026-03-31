@@ -15,6 +15,13 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+    <style name="Base.Theme.MyApp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+    <style name="CraveBottomNavTheme" parent="">
+        <item name="colorSecondaryContainer">#a3a3a3</item>
+    </style>
+
 
     <style name="RoundedBottomCorners" parent="">
         <item name="cornerSizeBottomLeft">30dp</item>

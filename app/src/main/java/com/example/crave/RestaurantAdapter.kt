@@ -16,7 +16,6 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
         val ivRestImage: ImageView = itemView.findViewById(R.id.ivRestImage)
         val tvRestName: TextView = itemView.findViewById(R.id.tvRestName)
         val tvCuisine: TextView = itemView.findViewById(R.id.tvCuisine)
-        val tvDistance: TextView = itemView.findViewById(R.id.tvDistance)
         val tvRating: TextView? = itemView.findViewById(R.id.tvRating)
     }
 
@@ -32,7 +31,6 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
         holder.tvRestName.text = restaurant.name
         holder.tvCuisine.text = restaurant.description
 
-        holder.tvDistance.text = restaurant.address
 
         holder.tvRating?.text = restaurant.rating.toString()
 

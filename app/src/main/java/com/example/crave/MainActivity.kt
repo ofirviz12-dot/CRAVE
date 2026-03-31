@@ -1,5 +1,6 @@
 package com.example.crave
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -17,12 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //android.util.Log.d("MY_DEBUG", "MainActivity")
-        android.widget.Toast.makeText(this, "Welcome to Main Activity!", android.widget.Toast.LENGTH_LONG).show()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        replaceFragment(FeedFragment())
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -49,11 +46,28 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        val shouldOpenAddPost = intent.getBooleanExtra("openAddPost", false)
+
+        if (shouldOpenAddPost) {
+            binding.bottomNavigation.selectedItemId = R.id.nav_add
+        } else {
+            replaceFragment(FeedFragment())
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        val shouldOpenAddPost = intent.getBooleanExtra("openAddPost", false)
+        if (shouldOpenAddPost) {
+            binding.bottomNavigation.selectedItemId = R.id.nav_add
+        }
     }
 }

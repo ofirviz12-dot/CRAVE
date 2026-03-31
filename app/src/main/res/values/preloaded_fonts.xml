@@ -4,6 +4,9 @@
         <item>@font/alfa_slab_one</item>
         <item>@font/caprasimo</item>
         <item>@font/coiny</item>
+        <item>@font/dm_sans</item>
         <item>@font/modak</item>
+        <item>@font/oswald</item>
+        <item>@font/oswald_extralight</item>
     </array>
 </resources>

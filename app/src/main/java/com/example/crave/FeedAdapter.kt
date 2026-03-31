@@ -61,38 +61,45 @@ class FeedAdapter(
         if (post.imageUrl.isNotEmpty()) {
             try {
                 if (post.imageUrl.startsWith("http")) {
-                    Glide.with(context).load(post.imageUrl).into(holder.ivPostImage)
+                    Glide.with(context)
+                        .load(post.imageUrl)
+                        .centerCrop()
+                        .into(holder.ivPostImage)
                 } else {
                     val imageBytes = Base64.decode(post.imageUrl, Base64.DEFAULT)
-                    Glide.with(context).asBitmap().load(imageBytes).into(holder.ivPostImage)
+                    Glide.with(context)
+                        .asBitmap()
+                        .load(imageBytes)
+                        .centerCrop()
+                        .into(holder.ivPostImage)
                 }
             } catch (e: Exception) {
                 holder.ivPostImage.setImageResource(android.R.drawable.ic_menu_gallery)
             }
         }
+
         if (post.userAvatar.isNotEmpty()) {
             try {
                 if (post.userAvatar.startsWith("http")) {
-                    Glide.with(context).load(post.userAvatar).into(holder.ivUserAvatar)
+                    Glide.with(context)
+                        .load(post.userAvatar)
+                        .into(holder.ivUserAvatar)
                 } else {
                     val imageBytes = Base64.decode(post.userAvatar, Base64.DEFAULT)
-                    Glide.with(context).asBitmap().load(imageBytes).into(holder.ivUserAvatar
-                    )
+                    Glide.with(context)
+                        .asBitmap()
+                        .load(imageBytes)
+                        .into(holder.ivUserAvatar)
                 }
-
             } catch (e: Exception) {
-                holder.ivUserAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
+                holder.ivUserAvatar.setImageResource(R.drawable.person_ic)
             }
         } else {
             holder.ivUserAvatar.setImageResource(R.drawable.person_ic)
         }
-        holder.ivUserAvatar.setOnClickListener {
-            onUserClicked(post.userId)
-        }
 
-        holder.tvUserName.setOnClickListener {
-            onUserClicked(post.userId)
-        }
+        holder.ivUserAvatar.setOnClickListener { onUserClicked(post.userId) }
+        holder.tvUserName.setOnClickListener { onUserClicked(post.userId) }
         holder.btnBack.visibility = View.GONE
 
         val isLikedByMe = post.likedBy.contains(currentUserId)
@@ -106,14 +113,13 @@ class FeedAdapter(
                 holder.btnLike.setImageResource(R.drawable.like_red_icon)
             } else {
                 holder.btnLike.clearColorFilter()
-                holder.btnLike.setImageResource(R.drawable.like_empty_icon)            }
+                holder.btnLike.setImageResource(R.drawable.like_empty_icon)
+            }
         }
 
         if (post.hasFoodAnalysis) {
             holder.btnNutrition.visibility = View.VISIBLE
-            holder.btnNutrition.setOnClickListener {
-                onNutritionClicked(post)
-            }
+            holder.btnNutrition.setOnClickListener { onNutritionClicked(post) }
         } else {
             holder.btnNutrition.visibility = View.GONE
         }
@@ -123,20 +129,31 @@ class FeedAdapter(
 
             if (!isLikedByMe) {
                 holder.btnLike.setImageResource(R.drawable.like_red_icon)
+                holder.lottieAnimation.visibility = View.VISIBLE
                 holder.lottieAnimation.progress = 0f
+                holder.lottieAnimation.removeAllAnimatorListeners()
+                holder.lottieAnimation.addAnimatorListener(object : android.animation.Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: android.animation.Animator) {}
+                    override fun onAnimationEnd(animation: android.animation.Animator) {
+                        holder.lottieAnimation.visibility = View.INVISIBLE
+                    }
+                    override fun onAnimationCancel(animation: android.animation.Animator) {
+                        holder.lottieAnimation.visibility = View.INVISIBLE
+                    }
+                    override fun onAnimationRepeat(animation: android.animation.Animator) {}
+                })
                 holder.lottieAnimation.playAnimation()
                 onLikeClicked(post, true)
             } else {
                 holder.btnLike.setImageResource(R.drawable.like_empty_icon)
                 holder.lottieAnimation.cancelAnimation()
                 holder.lottieAnimation.progress = 0f
+                holder.lottieAnimation.visibility = View.INVISIBLE
                 onLikeClicked(post, false)
             }
         }
 
-        holder.btnComment.setOnClickListener {
-            onCommentClicked(post)
-        }
+        holder.btnComment.setOnClickListener { onCommentClicked(post) }
     }
 
     override fun getItemCount() = posts.size

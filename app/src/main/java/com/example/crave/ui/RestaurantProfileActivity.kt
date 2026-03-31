@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.crave.databinding.ActivityRestaurantProfileBinding
+import com.example.crave.ui.AddPostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -38,15 +39,19 @@ class RestaurantProfileActivity : AppCompatActivity() {
 
         android.util.Log.d("MENU_TEST", "The received Restaurant ID is: $restId")
 
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         binding.btnMenu.setOnClickListener {
             showMenuBottomSheet(restId)
         }
 
-        binding.fabAddPost.setOnClickListener {
-            Toast.makeText(this, "Add a review for $restName", Toast.LENGTH_SHORT).show()
-            // val intent = Intent(this, MainActivity::class.java)
-            // intent.putExtra("openAddPost", true)
-            // startActivity(intent)
+        binding.AddPost.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("openAddPost", true)
+            intent.putExtra("PREFILLED_RESTAURANT_NAME", restName)
+            startActivity(intent)
         }
     }
 

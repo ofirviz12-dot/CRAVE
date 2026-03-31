@@ -18,12 +18,13 @@
 
         <TextView
             android:id="@+id/tvTitle"
-            android:text="Buy Coupon"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:text="Buy Coupon"
+            android:textColor="#333333"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etBuyAmount"
@@ -65,7 +66,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#CC6FCD"
+            android:backgroundTint="#6DBF82"
             android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="50dp"

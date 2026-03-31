@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import com.example.crave.BuildConfig
+import com.example.crave.R
 
 class AddPostFragment : Fragment() {
 
@@ -38,18 +39,14 @@ class AddPostFragment : Fragment() {
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             selectedImageUri = uri
-            binding.ivSelectedImage.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+            binding.ivPostImage.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+            binding.btnSelectImage.visibility = View.GONE
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                val safeBitmap = getBitmapFromUri(uri)
-                withContext(Dispatchers.Main) {
-                    if (safeBitmap != null) {
-                        binding.ivSelectedImage.setImageBitmap(safeBitmap)
-                    } else {
-                        Toast.makeText(context, "Error loading image", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+            com.bumptech.glide.Glide.with(this)
+                .load(uri)
+                .into(binding.ivPostImage)
+
+
         }
     }
 
@@ -64,6 +61,8 @@ class AddPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadCurrentUserInfo()
+
         binding.btnSelectImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -71,6 +70,14 @@ class AddPostFragment : Fragment() {
         binding.btnPost.setOnClickListener {
             uploadPost()
         }
+        val prefilledName = requireActivity().intent.getStringExtra("PREFILLED_RESTAURANT_NAME")
+
+        if (!prefilledName.isNullOrEmpty()) {
+            binding.etRestaurantName.setText(prefilledName)
+            requireActivity().intent.removeExtra("PREFILLED_RESTAURANT_NAME")
+        }
+
+
     }
 
     private fun uploadPost() {
@@ -79,25 +86,40 @@ class AddPostFragment : Fragment() {
         val user = auth.currentUser
 
         if (user == null) {
-            Toast.makeText(context, "You must be logged in!", Toast.LENGTH_SHORT).show()
+            showCustomPopup("You must be logged in")
             return
         }
 
         if (selectedImageUri == null) {
-            Toast.makeText(context, "Please select an image first", Toast.LENGTH_SHORT).show()
+            showCustomPopup("Please select an image first")
+            return
+        }
+        if(restaurant.isEmpty()){
+            showCustomPopup("Please enter a restaurant name")
             return
         }
 
         binding.btnPost.isEnabled = false
-        Toast.makeText(context, "Analyzing food & Posting... 🍔🤖", Toast.LENGTH_LONG).show()
+        binding.btnPost.text = "UPLOADING..."
 
         lifecycleScope.launch(Dispatchers.IO) {
-            var bitmap: Bitmap? = null
+            var originalBitmap: Bitmap? = null
+            var safeBitmap: Bitmap? = null
             try {
-                bitmap = getBitmapFromUri(selectedImageUri!!)
-                if (bitmap == null) throw Exception("Failed to load image")
+                originalBitmap = getBitmapFromUri(selectedImageUri!!)
+                if (originalBitmap == null) throw Exception("Failed to load image")
 
-                val imageBase64 = encodeImageToBase64(bitmap)
+                val maxWidth = 800f
+                val maxHeight = 800f
+                val ratio = Math.min(maxWidth / originalBitmap.width, maxHeight / originalBitmap.height)
+                val width = Math.round(ratio * originalBitmap.width)
+                val height = Math.round(ratio * originalBitmap.height)
+
+                safeBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, true)
+
+                val baos = ByteArrayOutputStream()
+                safeBitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                val imageBase64 = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
 
                 val apiKey = BuildConfig.GEMINI_API_KEY
                 val generativeModel = GenerativeModel(
@@ -121,7 +143,7 @@ class AddPostFragment : Fragment() {
 
                 val response = generativeModel.generateContent(
                     content {
-                        image(bitmap)
+                        image(originalBitmap)
                         text(prompt)
                     }
                 )
@@ -137,11 +159,19 @@ class AddPostFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e("AI_ERROR", "Failed: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    val fallbackBase64 = bitmap?.let { encodeImageToBase64(it) } ?: ""
+                    val fallbackBase64 = safeBitmap?.let {
+                        val baos = ByteArrayOutputStream()
+                        it.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                        Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+                    } ?: ""
                     savePostToFirestore(user, caption, restaurant, fallbackBase64, null)
+
                 }
             } finally {
-                bitmap?.recycle()
+                originalBitmap?.recycle()
+                if (safeBitmap != originalBitmap) {
+                    safeBitmap?.recycle()
+                }
             }
         }
     }
@@ -199,25 +229,40 @@ class AddPostFragment : Fragment() {
                 .add(newPost)
                 .addOnSuccessListener {
                     if (_binding != null) {
-                        Toast.makeText(context, "Post uploaded successfully! 🍔", Toast.LENGTH_SHORT).show()
                         binding.etCaption.text.clear()
                         binding.etRestaurantName.text.clear()
-                        binding.ivSelectedImage.setImageURI(null)
-                        // selectedImageUri = null
+                        binding.ivPostImage.setImageDrawable(null)
+
+                        binding.btnSelectImage.visibility = View.GONE
                         binding.btnPost.isEnabled = true
+                        binding.btnPost.text = "POST"
+                        binding.lottieSuccess.visibility = View.VISIBLE
+                        binding.lottieSuccess.playAnimation()
+
+                        binding.lottieSuccess.addAnimatorListener(object : android.animation.Animator.AnimatorListener {
+                            override fun onAnimationStart(animation: android.animation.Animator) {}
+                            override fun onAnimationEnd(animation: android.animation.Animator) {
+                                binding.lottieSuccess.visibility = View.GONE
+                                binding.btnSelectImage.visibility = View.VISIBLE
+                            }
+                            override fun onAnimationCancel(animation: android.animation.Animator) {}
+                            override fun onAnimationRepeat(animation: android.animation.Animator) {}
+                        })
                     }
                 }
                 .addOnFailureListener { e ->
                     if (_binding != null) {
-                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                        showCustomPopup("Error: ${e.message}")
                         binding.btnPost.isEnabled = true
+                        binding.btnPost.text = "POST"
                     }
                 }
 
         }.addOnFailureListener { e ->
             if (_binding != null) {
-                Toast.makeText(context, "Failed to load user profile", Toast.LENGTH_SHORT).show()
+                showCustomPopup("Failed to load user profile")
                 binding.btnPost.isEnabled = true
+                binding.btnPost.text = "POST"
             }
         }
     }
@@ -259,30 +304,48 @@ class AddPostFragment : Fragment() {
         return inSampleSize
     }
 
-    private fun encodeImageToBase64(bitmap: Bitmap): String {
-        return try {
-            val maxWidth = 600f
-            val maxHeight = 600f
-            val ratio = Math.min(maxWidth / bitmap.width, maxHeight / bitmap.height)
-            val width = Math.round(ratio * bitmap.width)
-            val height = Math.round(ratio * bitmap.height)
+      private fun loadCurrentUserInfo() {
+        val user = auth.currentUser ?: return
 
-            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true)
-            val baos = ByteArrayOutputStream()
+        binding.tvUserName.text = user.displayName ?: "Loading..."
 
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos)
-            val bytes = baos.toByteArray()
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val name = document.getString("name") ?: user.displayName ?: "New Craver"
+                    binding.tvUserName.text = name
 
-            if (scaledBitmap != bitmap) {
-                scaledBitmap.recycle()
+                    val base64Image = document.getString("profileImage") ?: ""
+                    if (base64Image.isNotEmpty()) {
+                        try {
+                            val imageBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT)
+                            com.bumptech.glide.Glide.with(this)
+                                .asBitmap()
+                                .load(imageBytes)
+                                .into(binding.ivUserAvatar)
+                        } catch (e: Exception) {
+                            binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
+                        }
+                    }
+                }
             }
-
-            Base64.encodeToString(bytes, Base64.DEFAULT)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
     }
+    private fun showCustomPopup(message: String) {
+        val dialog = android.app.Dialog(requireContext())
+        dialog.setContentView(R.layout.custom_popup)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvMessage = dialog.findViewById<android.widget.TextView>(R.id.tvPopupMessage)
+        tvMessage.text = message
+        dialog.show()
+
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            if (dialog.isShowing) {
+                dialog.dismiss()
+            }
+        }, 2000)
+    }
+    
 
     override fun onDestroyView() {
         super.onDestroyView()

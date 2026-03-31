@@ -4,156 +4,189 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#e9e8e3"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#e9e8e3"
-        android:paddingBottom="32dp">
+        android:paddingBottom="40dp">
 
-        <ImageView
-            android:id="@+id/ivWalletTitle"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:src="@drawable/mywalletb"
+        <FrameLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-        </ImageView>
+            <ImageView
+                android:id="@+id/ivWalletTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:src="@drawable/mywalletb"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
 
-
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardProgress"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvProgressLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            android:backgroundTint="#6DBE47"
+            android:layout_marginTop="4dp"
+            android:text="NEXT COIN PROGRESS"
+            android:textColor="#7CB98A"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivWalletTitle">
+            app:layout_constraintTop_toBottomOf="@id/layoutHeader" />
+
+        <FrameLayout
+            android:id="@+id/frameProgress"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvProgressLabel">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressLikes"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center"
+                android:max="10"
+                android:progress="0"
+                app:indicatorColor="#6DBF82"
+                app:indicatorSize="160dp"
+                app:trackColor="#D4EDDA"
+                app:trackThickness="14dp"
+                app:indicatorInset="0dp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvLikesCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Next Coin Progress"
-                    android:textColor="#333333"
-                    android:textSize="18sp"
+                    android:text="0/10"
+                    android:textColor="#2D6A4F"
+                    android:textSize="26sp"
                     android:textStyle="bold" />
 
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/progressLikes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:max="10"
-                        android:progress="0"
-                        app:indicatorColor="#CC6FCD"
-                        app:indicatorSize="100dp"
-                        app:trackColor="#E0E0E0"
-                        app:trackThickness="10dp" />
-
-                    <TextView
-                        android:id="@+id/tvLikesCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="0/10"
-                        android:textColor="#FFFF"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </FrameLayout>
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="10 Likes = 1 Coin!"
-                    android:textColor="#FFFF"
-                    android:textSize="14sp" />
+                    android:text="likes"
+                    android:textColor="#7CB98A"
+                    android:textSize="12sp" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvPillBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="7dp"
+            android:text="10 Likes = 1 Coin"
+            android:textColor="#2D6A4F"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/frameProgress" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="14dp"
+            android:background="#6DBF82"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvPillBadge" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardBalance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            android:backgroundTint="#6DBE47"
-
+            android:layout_marginHorizontal="55dp"
+            android:layout_marginTop="18dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardProgress">
+            app:layout_constraintTop_toBottomOf="@id/divider">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="24dp">
-
-                <ImageView
-                    android:id="@+id/ivCoinBalance"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@android:drawable/ic_menu_rotate"
-                    app:tint="#CC6FCD"
-                    tools:ignore="ContentDescription" />
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="3dp"
                     android:text="Available Coins"
-                    android:textColor="#FFFF"
-                    android:textSize="14sp" />
+                    android:textColor="#7CB98A"
+                    android:textSize="13sp"
+                    android:letterSpacing="0.05" />
 
-                <TextView
-                    android:id="@+id/tvCoinBalance"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="#FFFF"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/goldcoin"
+                        android:layout_marginEnd="15dp"/>
+                    <TextView
+                        android:id="@+id/tvCoinBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#2D6A4F"
+                        android:textSize="40sp"
+                        android:textStyle="bold"
+                        android:lineSpacingExtra="0dp" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRedeem"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_margin="32dp"
-            android:backgroundTint="#237414"
-            android:text="Buy Now !"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:layout_marginHorizontal="55dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#6DBF82"
+            android:text="Buy Now"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:letterSpacing="0.03"
+            app:cornerRadius="16dp"
+            app:elevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardBalance"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@id/cardBalance" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
