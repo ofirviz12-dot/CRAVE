@@ -1,101 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="24dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white">
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginVertical="12dp"
+    android:elevation="12dp"
+    android:background="@drawable/bg_glass_card"
+    android:outlineProvider="background"
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
+    android:padding="2dp">
 
-        <ImageView
-            android:id="@+id/ivRestImage"
-            android:layout_width="0dp"
-            android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+<androidx.constraintlayout.widget.ConstraintLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:paddingBottom="16dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:cardElevation="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+<com.google.android.material.imageview.ShapeableImageView
+android:id="@+id/ivRestImage"
+android:layout_width="0dp"
+android:layout_height="160dp"
+android:scaleType="centerCrop"
+android:src="@drawable/ic_launcher_background"
+app:shapeAppearanceOverlay="@style/RoundedTopCornersOnly"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp">
+<View
+android:layout_width="0dp"
+android:layout_height="0dp"
+android:background="@drawable/bg_glass_card"
+android:alpha="0.9"
+app:layout_constraintBottom_toBottomOf="@id/cardRating"
+app:layout_constraintEnd_toEndOf="@id/cardRating"
+app:layout_constraintStart_toStartOf="@id/cardRating"
+app:layout_constraintTop_toTopOf="@id/cardRating" />
 
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@android:drawable/btn_star_big_on"
-                    android:layout_marginEnd="4dp"
-                    app:tint="#F59E0B"
-                    tools:ignore="ContentDescription" />
+<LinearLayout
+android:id="@+id/cardRating"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_margin="12dp"
+android:gravity="center_vertical"
+android:orientation="horizontal"
+android:paddingHorizontal="10dp"
+android:paddingVertical="5dp"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/tvRating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4.8"
-                    android:textColor="#1A1A1A"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+<ImageView
+    android:layout_width="12dp"
+    android:layout_height="12dp"
+    android:src="@android:drawable/btn_star_big_on"
+    app:tint="#F59E0B" />
 
-        <TextView
-            android:id="@+id/tvRestName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginHorizontal="16dp"
-            android:text="Pasta Basta"
-            android:textColor="#333333"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivRestImage" />
+<TextView
+    android:id="@+id/tvRating"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:text="4.8"
+    android:textColor="#1A1A1A"
+    android:textSize="12sp"
+    android:textStyle="bold" />
+</LinearLayout>
 
-        <TextView
-            android:id="@+id/tvCuisine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="16dp"
-            android:text="Italian Cuisine"
-            android:textColor="#7CB98A"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRestName" />
+<TextView
+android:id="@+id/tvRestName"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_marginTop="12dp"
+android:layout_marginHorizontal="16dp"
+android:text="Pasta Basta"
+android:textColor="#1A1A1A"
+android:textSize="18sp"
+android:textStyle="bold"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/ivRestImage" />
 
-
-
-
-
+<TextView
+android:id="@+id/tvCuisine"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginStart="16dp"
+android:layout_marginTop="4dp"
+android:text="Italian Cuisine"
+android:textColor="#2E7D32"
+android:textSize="14sp"
+android:textStyle="bold"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/tvRestName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+    </FrameLayout>
