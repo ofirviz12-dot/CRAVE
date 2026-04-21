@@ -1,7 +1,9 @@
 package com.example.crave.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -15,21 +17,28 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlin.random.Random
 
-class WalletFragment : Fragment(R.layout.fragment_wallet) {
+class WalletFragment : Fragment() {
 
-    private lateinit var binding: FragmentWalletBinding
+    private var _binding: FragmentWalletBinding? = null
+    private val binding get() = _binding!!
+
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
     private var currentUserName = ""
-
     private var currentCoinsBalance = 0
     private var totalRedeemedCoins = 0
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentWalletBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentWalletBinding.bind(view)
 
         currentUserName = auth.currentUser?.displayName ?: "Unknown"
 
@@ -50,11 +59,17 @@ class WalletFragment : Fragment(R.layout.fragment_wallet) {
     private fun calculateWalletData() {
         db.collection("users").document(currentUserName)
             .addSnapshotListener { userSnapshot, _ ->
+
+                if (_binding == null) return@addSnapshotListener
+
                 totalRedeemedCoins = userSnapshot?.getLong("redeemedCoins")?.toInt() ?: 0
                 android.util.Log.d("WALLET_TEST", "Total redeemed coins: $totalRedeemedCoins")
 
                 db.collection("posts").whereEqualTo("userName", currentUserName)
                     .addSnapshotListener { postsSnapshot, e ->
+
+                        if (_binding == null) return@addSnapshotListener
+
                         if (e != null) {
                             android.util.Log.e("WALLET_TEST", "Error fetching posts", e)
                             return@addSnapshotListener
@@ -149,5 +164,9 @@ class WalletFragment : Fragment(R.layout.fragment_wallet) {
 
         binding.progressLikes.progress = likesProgress
         binding.tvLikesCount.text = "$likesProgress/10"
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

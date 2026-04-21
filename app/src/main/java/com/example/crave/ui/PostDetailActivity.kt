@@ -1,8 +1,10 @@
 package com.example.crave
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.crave.databinding.ItemFeedPostBinding
@@ -27,11 +29,24 @@ class PostDetailActivity : AppCompatActivity() {
         val userName = intent.getStringExtra("userName") ?: "Unknown"
         val description = intent.getStringExtra("description") ?: ""
         val restaurantName = intent.getStringExtra("restaurantName") ?: ""
+        val formattedRestaurantName = restaurantName.split(" ").joinToString(" ") { word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
         val imageUrl = intent.getStringExtra("imageUrl") ?: ""
+        val postUserId = intent.getStringExtra("userId") ?: ""
+        val userAvatar = intent.getStringExtra("userAvatar") ?: ""
+        val timeAgo = intent.getStringExtra("timeAgo") ?: ""
 
         binding.tvUserName.text = userName
         binding.tvCaption.text = description
-        binding.tvRestaurantName.text = restaurantName
+        binding.tvRestaurantName.text = formattedRestaurantName
+        binding.ivUserAvatar.setOnClickListener {
+            goToUserProfile(postUserId)
+        }
+        binding.tvUserName.setOnClickListener {
+            goToUserProfile(postUserId)
+        }
+        binding.tvTimeAgo.text = if (timeAgo.isNotEmpty()) timeAgo else "Just now"
 
         if (imageUrl.isNotEmpty()) {
             try {
@@ -43,6 +58,18 @@ class PostDetailActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+        if (userAvatar.isNotEmpty()) {
+            try {
+                if (userAvatar.startsWith("http")) {
+                    Glide.with(this).load(userAvatar).circleCrop().into(binding.ivUserAvatar)
+                } else {
+                    val imageBytes = Base64.decode(userAvatar, Base64.DEFAULT)
+                    Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivUserAvatar)
+                }
+            } catch (e: Exception) {
+                binding.ivUserAvatar.setImageResource(R.drawable.person_ic)
             }
         }
 
@@ -91,6 +118,17 @@ class PostDetailActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener {
             finish()
+        }
+
+    }
+    private fun goToUserProfile(userId: String) {
+        if (userId.isNotEmpty()) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("openUserProfile", true)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, "שגיאה בטעינת משתמש", Toast.LENGTH_SHORT).show()
         }
     }
 }

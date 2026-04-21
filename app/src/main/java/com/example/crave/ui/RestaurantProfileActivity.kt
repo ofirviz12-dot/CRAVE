@@ -30,6 +30,17 @@ class RestaurantProfileActivity : AppCompatActivity() {
         val restAddress = intent.getStringExtra("restAddress") ?: ""
         val restImage = intent.getStringExtra("restImage") ?: ""
         val restId = intent.getStringExtra("restId") ?: ""
+        val openTime = intent.getStringExtra("openTime") ?: ""
+        val closeTime = intent.getStringExtra("closeTime") ?: ""
+        val isOpen = isRestaurantOpenProfile(openTime, closeTime)
+
+        if (isOpen) {
+            binding.tvStatus.text = "Open now"
+            binding.tvStatus.setTextColor(android.graphics.Color.parseColor("#6DBF82"))
+        } else {
+            binding.tvStatus.text = "Closed"
+            binding.tvStatus.setTextColor(android.graphics.Color.parseColor("#F44336"))
+        }
 
         binding.tvProfileName.text = restName
         binding.tvProfileCuisine.text = "$restCategory • $restAddress"
@@ -94,9 +105,11 @@ class RestaurantProfileActivity : AppCompatActivity() {
                     intent.putExtra("userName", selectedPost.userName)
                     intent.putExtra("description", selectedPost.caption)
                     intent.putExtra("imageUrl", selectedPost.imageUrl)
-
                     intent.putExtra("postId", selectedPost.id)
                     intent.putExtra("restaurantName", selectedPost.restaurantName)
+                    intent.putExtra("userId", selectedPost.userId)
+                    intent.putExtra("userAvatar", selectedPost.userAvatar)
+                    intent.putExtra("timeAgo", selectedPost.timeAgo)
 
                     startActivity(intent)
                 }
@@ -140,5 +153,31 @@ class RestaurantProfileActivity : AppCompatActivity() {
                 android.util.Log.e("MENU_TEST", "Error loading menu", exception)
                 Toast.makeText(this, "error loading menu", Toast.LENGTH_SHORT).show()
             }
+    }
+    private fun isRestaurantOpenProfile(openTime: String, closeTime: String): Boolean {
+        if (openTime.isBlank() || closeTime.isBlank()) return false
+        try {
+            val calendar = java.util.Calendar.getInstance()
+            val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+            val currentMinute = calendar.get(java.util.Calendar.MINUTE)
+            val currentTimeInMinutes = (currentHour * 60) + currentMinute
+
+            val cleanOpen = openTime.trim()
+            val cleanClose = closeTime.trim()
+
+            val openParts = cleanOpen.split(":")
+            val openInMinutes = (openParts[0].toInt() * 60) + openParts[1].toInt()
+
+            val closeParts = cleanClose.split(":")
+            val closeInMinutes = (closeParts[0].toInt() * 60) + closeParts[1].toInt()
+
+            return if (closeInMinutes > openInMinutes) {
+                currentTimeInMinutes in openInMinutes..closeInMinutes
+            } else {
+                currentTimeInMinutes >= openInMinutes || currentTimeInMinutes <= closeInMinutes
+            }
+        } catch (e: Exception) {
+            return false
+        }
     }
 }

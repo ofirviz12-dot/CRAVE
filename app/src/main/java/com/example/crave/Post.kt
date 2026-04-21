@@ -14,13 +14,13 @@ data class Post(
     val likedBy: ArrayList<String> = ArrayList(),
     val commentsCount: Int = 0,
 
-    val hasFoodAnalysis: Boolean = false, // האם ה-AI ניתח את התמונה הזו?
-    val detectedDish: String = "", // איזה אוכל הוא זיהה (למשל: Creamy Pasta)
-    val ingredients: List<String> = emptyList(), // רשימת המרכיבים
-    val calories: String = "", // קלוריות
-    val protein: String = "", // חלבון
-    val carbs: String = "", // פחמימות
-    val fat: String = "", // שומן
+    val hasFoodAnalysis: Boolean = false,
+    val detectedDish: String = "",
+    val ingredients: List<String> = emptyList(),
+    val calories: String = "",
+    val protein: String = "",
+    val carbs: String = "",
+    val fat: String = "",
     val dietLabels: List<String> = emptyList()
 ) {
     val likes: Int get() = likedBy.size

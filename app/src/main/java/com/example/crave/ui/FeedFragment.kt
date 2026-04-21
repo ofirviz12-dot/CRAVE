@@ -1,30 +1,43 @@
 package com.example.crave.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.crave.FeedAdapter
 import com.example.crave.Post
 import com.example.crave.R
+import com.example.crave.databinding.FragmentFeedBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
-class FeedFragment : Fragment(R.layout.fragment_feed) {
+class FeedFragment : Fragment() {
+
+    private var _binding: FragmentFeedBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var feedAdapter: FeedAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentFeedBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvFeed = view.findViewById<RecyclerView>(R.id.rvFeed)
-        rvFeed.layoutManager = LinearLayoutManager(context)
-        (rvFeed.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
         val db = FirebaseFirestore.getInstance()
+
+        binding.rvFeed.layoutManager = LinearLayoutManager(context)
+        (binding.rvFeed.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
 
         feedAdapter = FeedAdapter(emptyList(),
             onPostClicked = { selectedPost ->
@@ -49,7 +62,7 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
             onUserClicked = { clickedUserId ->
                 val profileFragment = ProfileFragment()
                 val bundle = Bundle()
-                bundle.putString("TARGET_USER_ID", clickedUserId)
+                bundle.putString("userId", clickedUserId)
                 profileFragment.arguments = bundle
 
                 parentFragmentManager.beginTransaction()
@@ -58,12 +71,15 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                     .commit()
             }
         )
-        rvFeed.adapter = feedAdapter
+        binding.rvFeed.adapter = feedAdapter
 
         db.collection("posts")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { value, error ->
+
                 if (error != null) return@addSnapshotListener
+
+                if (_binding == null) return@addSnapshotListener
 
                 val postList = mutableListOf<Post>()
                 if (value != null) {
@@ -75,5 +91,10 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
 
                 feedAdapter.updatePosts(postList)
             }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

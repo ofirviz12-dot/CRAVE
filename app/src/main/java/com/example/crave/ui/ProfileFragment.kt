@@ -30,7 +30,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         _binding = FragmentProfileBinding.bind(view)
 
-        val targetUserId = arguments?.getString("TARGET_USER_ID")
+        val targetUserId = arguments?.getString("userId")
         val currentUserId = auth.currentUser?.uid
 
         val userIdToShow = targetUserId ?: currentUserId
@@ -40,12 +40,19 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
             if (userIdToShow == currentUserId) {
                 binding.btnEditProfile.visibility = View.VISIBLE
+                binding.ivHeaderImage.visibility = View.VISIBLE
+                binding.btnBackProfile.visibility = View.GONE
                 binding.btnEditProfile.setOnClickListener {
                     val intent = Intent(context, EditProfileActivity::class.java)
                     startActivity(intent)
                 }
             } else {
                 binding.btnEditProfile.visibility = View.GONE
+                binding.ivHeaderImage.visibility = View.INVISIBLE
+                binding.btnBackProfile.visibility = View.VISIBLE
+                binding.btnBackProfile.setOnClickListener {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
 
         } else {
@@ -59,6 +66,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { documents ->
+                if (_binding == null) return@addOnSuccessListener
                 val userPostsList = mutableListOf<Post>()
                 var totalLikes = 0
 
@@ -93,9 +101,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         db.collection("users").document(userId).get()
             .addOnSuccessListener { document ->
+                if (_binding == null) return@addOnSuccessListener
                 if (document != null && document.exists()) {
-                    val bio = document.getString("bio") ?: "Foodie & App Developer \uD83D\uDCF1"
-                    binding.tvBio.text = bio
+                    val bio = document.getString("bio")
+                    if (!bio.isNullOrBlank()) {
+                         binding.tvBio.text = bio
+                    }else {
+                    binding.tvBio.text = "Food Lover \uD83C\uDF54"
+                }
 
                     val realName = document.getString("name")
                     if (!realName.isNullOrEmpty()) {
@@ -139,6 +152,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             intent.putExtra("likes", clickedPost.likedBy.size)
             intent.putExtra("postId", clickedPost.id)
             intent.putExtra("restaurantName", clickedPost.restaurantName)
+            intent.putExtra("userId", clickedPost.userId)
+            intent.putExtra("userAvatar", clickedPost.userAvatar)
+            intent.putExtra("timeAgo", clickedPost.timeAgo)
             startActivity(intent)
         }
     }

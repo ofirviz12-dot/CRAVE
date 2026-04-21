@@ -46,14 +46,7 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-        val shouldOpenAddPost = intent.getBooleanExtra("openAddPost", false)
-
-        if (shouldOpenAddPost) {
-            binding.bottomNavigation.selectedItemId = R.id.nav_add
-        } else {
-            replaceFragment(FeedFragment())
-        }
+        handleIncomingIntent(intent)
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -64,10 +57,33 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        handleIncomingIntent(intent)
 
         val shouldOpenAddPost = intent.getBooleanExtra("openAddPost", false)
         if (shouldOpenAddPost) {
             binding.bottomNavigation.selectedItemId = R.id.nav_add
+        }
+    }
+    private fun handleIncomingIntent(intent: Intent) {
+        val shouldOpenAddPost = intent.getBooleanExtra("openAddPost", false)
+        val openUserProfile = intent.getBooleanExtra("openUserProfile", false)
+        val userId = intent.getStringExtra("userId")
+        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+
+        if (shouldOpenAddPost) {
+            binding.bottomNavigation.selectedItemId = R.id.nav_add
+        } else if (openUserProfile && userId != null) {
+            val profileFragment = ProfileFragment()
+            val bundle = Bundle()
+            bundle.putString("userId", userId)
+            profileFragment.arguments = bundle
+
+            replaceFragment(profileFragment)
+            if (userId == currentUserId) {
+                binding.bottomNavigation.menu.findItem(R.id.nav_profile).isChecked = true
+            }
+        } else {
+            replaceFragment(FeedFragment())
         }
     }
 }

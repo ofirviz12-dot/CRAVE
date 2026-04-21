@@ -82,7 +82,10 @@ class AddPostFragment : Fragment() {
 
     private fun uploadPost() {
         val caption = binding.etCaption.text.toString().trim()
-        val restaurant = binding.etRestaurantName.text.toString().trim()
+        val restaurantInput = binding.etRestaurantName.text.toString().trim()
+        val restaurant = restaurantInput.split(" ").joinToString(" ") { word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
         val user = auth.currentUser
 
         if (user == null) {
@@ -311,6 +314,7 @@ class AddPostFragment : Fragment() {
 
         db.collection("users").document(user.uid).get()
             .addOnSuccessListener { document ->
+                if (_binding == null) return@addOnSuccessListener
                 if (document != null && document.exists()) {
                     val name = document.getString("name") ?: user.displayName ?: "New Craver"
                     binding.tvUserName.text = name

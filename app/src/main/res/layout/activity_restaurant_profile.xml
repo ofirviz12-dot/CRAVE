@@ -54,16 +54,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="14dp"
-                    app:cardCornerRadius="20dp"
+                    app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/tvOpenStatus"
+                        android:id="@+id/tvStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="● Open now"
+                        android:text="Open now"
                         android:textColor="#6DBF82"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -78,7 +78,7 @@
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="-20dp"
                     android:layout_marginBottom="8dp"
-                    app:cardCornerRadius="20dp"
+                    app:cardCornerRadius="12dp"
                     app:cardElevation="10dp"
                     app:cardBackgroundColor="#FFFFFF"
                     app:layout_constraintEnd_toEndOf="parent"

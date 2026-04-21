@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#e9e8e3"
-    android:padding="24dp">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,23 +14,27 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:src="@drawable/newpost"/>
+            android:layout_height="60dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/newpostz"/>
+
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="20dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="12dp"> <LinearLayout
+                android:paddingBottom="12dp">
+                <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -166,6 +170,7 @@
             android:id="@+id/btnPost"
             android:layout_width="match_parent"
             android:layout_height="65dp"
+            android:layout_marginHorizontal="20dp"
             android:backgroundTint="#50C878"
             android:text="POST"
             android:textSize="18sp"

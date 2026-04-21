@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="12dp"
@@ -112,6 +111,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="12dp"
             android:paddingTop="12dp">
@@ -127,7 +127,6 @@
                 android:id="@+id/tvLikesCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="6dp"
                 android:text="0"
                 android:textColor="#333333"
@@ -136,8 +135,8 @@
 
             <ImageView
                 android:id="@+id/btnComment"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/chat"
                 app:tint="#333333"
@@ -147,7 +146,6 @@
                 android:id="@+id/tvCommentsCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="6dp"
                 android:text="0"
                 android:textColor="#333333"
@@ -156,8 +154,8 @@
 
             <ImageView
                 android:id="@+id/btnNutrition"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/nutrition"
                 app:tint="#4CAF50"
