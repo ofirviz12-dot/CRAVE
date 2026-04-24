@@ -41,13 +41,13 @@ The project follows a clean, package-based architecture to ensure scalability an
 
 ## 🎞️ App Demo (Visuals)
 
-### 1. Social Feed & Posting
+### 1. Social Feed & User Profile
 <p align="start">
   <img src="20260424_164819.png" width="250"/>
     <img src="20260424_164713.png" width="250"/>
 </p>
 
-### 2. Restaurant Profiles & Menus
+### 2. Restaurant Profiles 
 <p align="start">
   <img src="20260424_164728.png" width="250"/>
     <img src="20260424_164749.png" width="250"/>
@@ -56,6 +56,11 @@ The project follows a clean, package-based architecture to ensure scalability an
 ### 3. Digital Wallet & Rewards
 <p align="start">
   <img src="20260424_164657.png" width="250"/>
+</p>
+
+### 4.AI Food Analysis
+<p align="start">
+  <img src="20260424_170520.png" width="250"/>
 </p>
 
 ---
