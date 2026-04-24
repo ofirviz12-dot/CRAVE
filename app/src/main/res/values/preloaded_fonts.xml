@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
-        <item>@font/</item>
         <item>@font/alfa_slab_one</item>
-        <item>@font/caprasimo</item>
-        <item>@font/cherry_bomb_one</item>
-        <item>@font/coiny</item>
-        <item>@font/dm_sans</item>
-        <item>@font/dm_serif_display</item>
-        <item>@font/gasoek_one</item>
         <item>@font/inter_light</item>
-        <item>@font/luckiest_guy</item>
         <item>@font/marcellus</item>
         <item>@font/merriweather</item>
-        <item>@font/nunito_black</item>
-        <item>@font/oswald</item>
+=        <item>@font/oswald</item>
         <item>@font/oswald_extralight</item>
         <item>@font/roboto_light</item>
     </array>

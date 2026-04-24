@@ -1,7 +1,9 @@
-package com.example.crave
+package com.example.crave.adapters
 
 import android.content.Intent
+import android.graphics.Color
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +11,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.crave.R
+import com.example.crave.RestaurantProfileActivity
+import com.example.crave.models.Restaurant
 import java.util.Calendar
+
 class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder>() {
 
     class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,7 +34,6 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
         val restaurant = restaurants[position]
         val context = holder.itemView.context
-        android.util.Log.d("TIME_TEST", "Restaurant: ${restaurant.name} | Open: ${restaurant.openTime} | Close: ${restaurant.closeTime}")
         val isOpen = isRestaurantOpen(restaurant.openTime, restaurant.closeTime)
 
         holder.tvRestName.text = restaurant.name
@@ -66,10 +71,10 @@ class RestaurantAdapter(private val restaurants: List<Restaurant>) : RecyclerVie
         }
         if (isOpen) {
             holder.tvStatus?.text = "OPEN NOW"
-            holder.tvStatus?.setTextColor(android.graphics.Color.parseColor("#7CB98A"))
+            holder.tvStatus?.setTextColor(Color.parseColor("#7CB98A"))
         } else {
             holder.tvStatus?.text = "CLOSED"
-            holder.tvStatus?.setTextColor(android.graphics.Color.parseColor("#F44336"))
+            holder.tvStatus?.setTextColor(Color.parseColor("#F44336"))
         }
 
         holder.itemView.setOnClickListener {

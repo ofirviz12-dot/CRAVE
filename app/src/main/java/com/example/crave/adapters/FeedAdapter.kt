@@ -1,19 +1,21 @@
-package com.example.crave
+package com.example.crave.adapters
 
-import android.util.Base64
+import android.animation.Animator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
-import com.bumptech.glide.Glide
+import com.example.crave.R
+import com.example.crave.models.Post
+import com.example.crave.utils.loadImage
 import com.google.firebase.auth.FirebaseAuth
 
 class FeedAdapter(
     private var posts: List<Post>,
-    private val onPostClicked: (Post) -> Unit,
     private val onLikeClicked: (Post, Boolean) -> Unit,
     private val onCommentClicked: (Post) -> Unit,
     private val onNutritionClicked: (Post) -> Unit,
@@ -58,45 +60,9 @@ class FeedAdapter(
             holder.tvRestaurantName.visibility = View.GONE
         }
 
-        if (post.imageUrl.isNotEmpty()) {
-            try {
-                if (post.imageUrl.startsWith("http")) {
-                    Glide.with(context)
-                        .load(post.imageUrl)
-                        .centerCrop()
-                        .into(holder.ivPostImage)
-                } else {
-                    val imageBytes = Base64.decode(post.imageUrl, Base64.DEFAULT)
-                    Glide.with(context)
-                        .asBitmap()
-                        .load(imageBytes)
-                        .centerCrop()
-                        .into(holder.ivPostImage)
-                }
-            } catch (e: Exception) {
-                holder.ivPostImage.setImageResource(android.R.drawable.ic_menu_gallery)
-            }
-        }
+        holder.ivPostImage.loadImage(post.imageUrl, isCircular = false, fallbackResId = android.R.drawable.ic_menu_gallery)
 
-        if (post.userAvatar.isNotEmpty()) {
-            try {
-                if (post.userAvatar.startsWith("http")) {
-                    Glide.with(context)
-                        .load(post.userAvatar)
-                        .into(holder.ivUserAvatar)
-                } else {
-                    val imageBytes = Base64.decode(post.userAvatar, Base64.DEFAULT)
-                    Glide.with(context)
-                        .asBitmap()
-                        .load(imageBytes)
-                        .into(holder.ivUserAvatar)
-                }
-            } catch (e: Exception) {
-                holder.ivUserAvatar.setImageResource(R.drawable.person_ic)
-            }
-        } else {
-            holder.ivUserAvatar.setImageResource(R.drawable.person_ic)
-        }
+        holder.ivUserAvatar.loadImage(post.userAvatar, isCircular = true, fallbackResId = R.drawable.person_ic)
 
         holder.ivUserAvatar.setOnClickListener { onUserClicked(post.userId) }
         holder.tvUserName.setOnClickListener { onUserClicked(post.userId) }
@@ -132,15 +98,15 @@ class FeedAdapter(
                 holder.lottieAnimation.visibility = View.VISIBLE
                 holder.lottieAnimation.progress = 0f
                 holder.lottieAnimation.removeAllAnimatorListeners()
-                holder.lottieAnimation.addAnimatorListener(object : android.animation.Animator.AnimatorListener {
-                    override fun onAnimationStart(animation: android.animation.Animator) {}
-                    override fun onAnimationEnd(animation: android.animation.Animator) {
+                holder.lottieAnimation.addAnimatorListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator) {}
+                    override fun onAnimationEnd(animation: Animator) {
                         holder.lottieAnimation.visibility = View.INVISIBLE
                     }
-                    override fun onAnimationCancel(animation: android.animation.Animator) {
+                    override fun onAnimationCancel(animation: Animator) {
                         holder.lottieAnimation.visibility = View.INVISIBLE
                     }
-                    override fun onAnimationRepeat(animation: android.animation.Animator) {}
+                    override fun onAnimationRepeat(animation: Animator) {}
                 })
                 holder.lottieAnimation.playAnimation()
                 onLikeClicked(post, true)
@@ -159,13 +125,13 @@ class FeedAdapter(
     override fun getItemCount() = posts.size
 
     fun updatePosts(newPosts: List<Post>) {
-        val diffCallback = object : androidx.recyclerview.widget.DiffUtil.Callback() {
+        val diffCallback = object : DiffUtil.Callback() {
             override fun getOldListSize() = posts.size
             override fun getNewListSize() = newPosts.size
             override fun areItemsTheSame(oldPos: Int, newPos: Int) = posts[oldPos].id == newPosts[newPos].id
             override fun areContentsTheSame(oldPos: Int, newPos: Int) = posts[oldPos] == newPosts[newPos]
         }
-        val diffResult = androidx.recyclerview.widget.DiffUtil.calculateDiff(diffCallback)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         posts = newPosts
         diffResult.dispatchUpdatesTo(this)
     }

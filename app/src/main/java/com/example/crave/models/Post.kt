@@ -1,4 +1,4 @@
-package com.example.crave
+package com.example.crave.models
 
 import java.util.Date
 

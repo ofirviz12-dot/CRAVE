@@ -8,8 +8,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.crave.R
-import com.example.crave.Restaurant
-import com.example.crave.RestaurantAdapter
+import com.example.crave.models.Restaurant
+import com.example.crave.adapters.RestaurantAdapter
 import com.example.crave.databinding.FragmentRestaurantBinding
 import com.google.firebase.firestore.FirebaseFirestore
 

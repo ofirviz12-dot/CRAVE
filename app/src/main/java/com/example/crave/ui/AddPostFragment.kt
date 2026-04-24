@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import com.example.crave.utils.showCustomPopup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +26,7 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import com.example.crave.BuildConfig
 import com.example.crave.R
+import com.example.crave.utils.loadImage
 
 class AddPostFragment : Fragment() {
 
@@ -89,16 +90,16 @@ class AddPostFragment : Fragment() {
         val user = auth.currentUser
 
         if (user == null) {
-            showCustomPopup("You must be logged in")
+            requireContext().showCustomPopup("You must be logged in")
             return
         }
 
         if (selectedImageUri == null) {
-            showCustomPopup("Please select an image first")
+            requireContext().showCustomPopup("Please select an image first")
             return
         }
         if(restaurant.isEmpty()){
-            showCustomPopup("Please enter a restaurant name")
+            requireContext().showCustomPopup("Please enter a restaurant name")
             return
         }
 
@@ -255,7 +256,7 @@ class AddPostFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     if (_binding != null) {
-                        showCustomPopup("Error: ${e.message}")
+                        requireContext().showCustomPopup("Error: ${e.message}")
                         binding.btnPost.isEnabled = true
                         binding.btnPost.text = "POST"
                     }
@@ -263,7 +264,7 @@ class AddPostFragment : Fragment() {
 
         }.addOnFailureListener { e ->
             if (_binding != null) {
-                showCustomPopup("Failed to load user profile")
+                requireContext().showCustomPopup("Failed to load user profile")
                 binding.btnPost.isEnabled = true
                 binding.btnPost.text = "POST"
             }
@@ -320,35 +321,12 @@ class AddPostFragment : Fragment() {
                     binding.tvUserName.text = name
 
                     val base64Image = document.getString("profileImage") ?: ""
-                    if (base64Image.isNotEmpty()) {
-                        try {
-                            val imageBytes = android.util.Base64.decode(base64Image, android.util.Base64.DEFAULT)
-                            com.bumptech.glide.Glide.with(this)
-                                .asBitmap()
-                                .load(imageBytes)
-                                .into(binding.ivUserAvatar)
-                        } catch (e: Exception) {
-                            binding.ivUserAvatar.setImageResource(R.drawable.ic_launcher_background)
-                        }
-                    }
+                    binding.ivUserAvatar.loadImage(base64Image, isCircular = true, fallbackResId = R.drawable.person_ic)
+
                 }
             }
     }
-    private fun showCustomPopup(message: String) {
-        val dialog = android.app.Dialog(requireContext())
-        dialog.setContentView(R.layout.custom_popup)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val tvMessage = dialog.findViewById<android.widget.TextView>(R.id.tvPopupMessage)
-        tvMessage.text = message
-        dialog.show()
-
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            if (dialog.isShowing) {
-                dialog.dismiss()
-            }
-        }, 2000)
-    }
     
 
     override fun onDestroyView() {

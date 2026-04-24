@@ -8,8 +8,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.crave.databinding.ItemFeedPostBinding
+import com.example.crave.models.Post
 import com.example.crave.ui.CommentsBottomSheetFragment
 import com.example.crave.ui.NutritionBottomSheetFragment
+import com.example.crave.utils.loadImage
+import com.example.crave.utils.showCustomPopup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -48,30 +51,8 @@ class PostDetailActivity : AppCompatActivity() {
         }
         binding.tvTimeAgo.text = if (timeAgo.isNotEmpty()) timeAgo else "Just now"
 
-        if (imageUrl.isNotEmpty()) {
-            try {
-                if (imageUrl.startsWith("http")) {
-                    Glide.with(this).load(imageUrl).into(binding.ivPostImage)
-                } else {
-                    val imageBytes = Base64.decode(imageUrl, Base64.DEFAULT)
-                    Glide.with(this).asBitmap().load(imageBytes).into(binding.ivPostImage)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        if (userAvatar.isNotEmpty()) {
-            try {
-                if (userAvatar.startsWith("http")) {
-                    Glide.with(this).load(userAvatar).circleCrop().into(binding.ivUserAvatar)
-                } else {
-                    val imageBytes = Base64.decode(userAvatar, Base64.DEFAULT)
-                    Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivUserAvatar)
-                }
-            } catch (e: Exception) {
-                binding.ivUserAvatar.setImageResource(R.drawable.person_ic)
-            }
-        }
+        binding.ivPostImage.loadImage(imageUrl, isCircular = false, fallbackResId = android.R.drawable.ic_menu_gallery)
+        binding.ivUserAvatar.loadImage(userAvatar, isCircular = true, fallbackResId = R.drawable.person_ic)
 
         if (postId.isNotEmpty()) {
 
@@ -128,7 +109,7 @@ class PostDetailActivity : AppCompatActivity() {
             intent.putExtra("userId", userId)
             startActivity(intent)
         } else {
-            Toast.makeText(this, "שגיאה בטעינת משתמש", Toast.LENGTH_SHORT).show()
+            showCustomPopup("ERROR")
         }
     }
 }

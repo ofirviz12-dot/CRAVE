@@ -2,18 +2,18 @@ package com.example.crave.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
-import com.example.crave.EditProfileActivity
-import com.example.crave.Post
+import com.example.crave.ui.EditProfileActivity
+import com.example.crave.models.Post
 import com.example.crave.PostDetailActivity
-import com.example.crave.ProfileGridAdapter
+import com.example.crave.adapters.ProfileGridAdapter
 import com.example.crave.R
 import com.example.crave.databinding.FragmentProfileBinding
+import com.example.crave.utils.loadImage
+import com.example.crave.utils.showCustomPopup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -56,7 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
 
         } else {
-            Toast.makeText(context, "User not found", Toast.LENGTH_SHORT).show()
+            requireContext().showCustomPopup("User not found")
         }
     }
 
@@ -86,16 +86,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 if (userPostsList.isNotEmpty()) {
                     val firstPost = userPostsList.first()
                     binding.tvUsername.text = firstPost.userName
-                    if (firstPost.userAvatar.isNotEmpty() && isAdded && context != null) {
-                        Glide.with(this).load(firstPost.userAvatar).circleCrop().into(binding.ivUserProfile)
-                    }
+                    binding.ivUserProfile.loadImage(firstPost.userAvatar, isCircular = true, fallbackResId = R.drawable.person_ic)
                 } else if (binding.tvUsername.text.isEmpty()) {
                     binding.tvUsername.text = "Crave User"
                 }
             }
             .addOnFailureListener {
                 if (isAdded && context != null) {
-                    Toast.makeText(context, "Could not load posts", Toast.LENGTH_SHORT).show()
+                    requireContext().showCustomPopup("Could not load posts")
                 }
             }
 
@@ -114,26 +112,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     if (!realName.isNullOrEmpty()) {
                         binding.tvUsername.text = realName
                     }
-
                     val profileImageStr = document.getString("profileImage") ?: ""
                     if (profileImageStr.isNotEmpty()) {
-                        try {
-                            if (profileImageStr.startsWith("http")) {
-                                if (isAdded && context != null) {
-                                    Glide.with(this).load(profileImageStr).circleCrop().into(binding.ivUserProfile)
-                                }
-                            } else {
-                                val imageBytes = Base64.decode(profileImageStr, Base64.DEFAULT)
-                                if (isAdded && context != null) {
-                                    Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivUserProfile)
-                                }
-                            }
-                        } catch (e: Exception) {
-                            loadDefaultProfileImage()
-                        }
+                        binding.ivUserProfile.loadImage(profileImageStr, isCircular = true, fallbackResId = R.drawable.person_ic)
                     } else {
                         loadDefaultProfileImage()
                     }
+
                 } else {
                     binding.tvBio.text = "Food Lover \uD83C\uDF54"
                     loadDefaultProfileImage()

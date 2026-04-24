@@ -1,10 +1,12 @@
-package com.example.crave
+package com.example.crave.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.crave.R
+import com.example.crave.models.Comment
 
 class CommentAdapter(private var comments: List<Comment>) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -26,7 +28,6 @@ class CommentAdapter(private var comments: List<Comment>) : RecyclerView.Adapter
 
     override fun getItemCount() = comments.size
 
-    // פונקציה לעדכון הרשימה כשיש תגובות חדשות
     fun updateComments(newComments: List<Comment>) {
         comments = newComments
         notifyDataSetChanged()

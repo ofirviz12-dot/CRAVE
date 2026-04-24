@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.crave.FeedAdapter
-import com.example.crave.Post
+import com.example.crave.adapters.FeedAdapter
+import com.example.crave.models.Post
 import com.example.crave.R
 import com.example.crave.databinding.FragmentFeedBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -40,8 +39,7 @@ class FeedFragment : Fragment() {
         (binding.rvFeed.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
 
         feedAdapter = FeedAdapter(emptyList(),
-            onPostClicked = { selectedPost ->
-            },
+
             onLikeClicked = { likedPost, isAddingLike ->
                 val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@FeedAdapter
                 val postRef = db.collection("posts").document(likedPost.id)
@@ -52,10 +50,12 @@ class FeedFragment : Fragment() {
                 }
             },
             onCommentClicked = { clickedPost ->
+                if (!isAdded || _binding == null) return@FeedAdapter
                 val bottomSheet = CommentsBottomSheetFragment(clickedPost.id)
                 bottomSheet.show(parentFragmentManager, "CommentsBottomSheet")
             },
             onNutritionClicked = { clickedPost ->
+                if (!isAdded || _binding == null) return@FeedAdapter
                 val bottomSheet = NutritionBottomSheetFragment(clickedPost)
                 bottomSheet.show(parentFragmentManager, "NutritionBottomSheet")
             },

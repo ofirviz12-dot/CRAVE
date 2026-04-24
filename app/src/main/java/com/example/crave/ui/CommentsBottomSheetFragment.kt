@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.crave.Comment
-import com.example.crave.CommentAdapter
+import com.example.crave.models.Comment
+import com.example.crave.adapters.CommentAdapter
 import com.example.crave.R
 import com.example.crave.databinding.LayoutBottomSheetCommentsBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
@@ -59,7 +59,6 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
                 if (_binding == null) return@addSnapshotListener
 
                 if (error != null) {
-                    Toast.makeText(context, "Error loading comments", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
@@ -75,7 +74,9 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
 
                 if (commentsList.isNotEmpty()) {
                     binding.rvComments.post {
+                        if (_binding != null) {
                         binding.rvComments.smoothScrollToPosition(commentsList.size - 1)
+                        }
                     }
                 }
             }
@@ -89,7 +90,7 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
             "userId" to user.uid,
             "userName" to (user.displayName ?: "Anonymous"),
             "text" to text,
-            "timestamp" to System.currentTimeMillis()
+            "timestamp" to FieldValue.serverTimestamp()
         )
 
         db.collection("comments").add(newComment)
@@ -97,11 +98,7 @@ class CommentsBottomSheetFragment(private val postId: String) : BottomSheetDialo
                 db.collection("posts").document(postId)
                     .update("commentsCount", com.google.firebase.firestore.FieldValue.increment(1))
             }
-            .addOnFailureListener {
-                if (_binding != null && context != null) {
-                    Toast.makeText(context, "Failed to send comment", Toast.LENGTH_SHORT).show()
-                }
-            }
+
     }
 
     override fun onDestroyView() {

@@ -1,19 +1,21 @@
-package com.example.crave
+package com.example.crave.ui
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
-import android.widget.Toast
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.crave.databinding.ActivityEditProfileBinding
+import com.example.crave.utils.loadImage
+import com.example.crave.utils.showCustomPopup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions // <--- הוספנו את הייבוא הזה
+import com.google.firebase.firestore.SetOptions
 import java.io.ByteArrayOutputStream
 
 class EditProfileActivity : AppCompatActivity() {
@@ -53,8 +55,7 @@ class EditProfileActivity : AppCompatActivity() {
                             val savedBase64 = document.getString("profileImage") ?: ""
                             if (savedBase64.isNotEmpty()) {
                                 base64ImageString = savedBase64
-                                val imageBytes = Base64.decode(savedBase64, Base64.DEFAULT)
-                                Glide.with(this).asBitmap().load(imageBytes).circleCrop().into(binding.ivEditProfileImage)
+                                binding.ivEditProfileImage.loadImage(savedBase64, isCircular = true)
                             } else {
                                 loadDefaultImage()
                             }
@@ -103,7 +104,7 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                     .addOnFailureListener { e ->
                         showCustomPopup("Error: ${e.message}")
-                        android.util.Log.e("EditProfile", "Error saving profile", e)
+                        Log.e("EditProfile", "Error saving profile", e)
                     }
             } else {
                 showCustomPopup("Error: User not found")
@@ -134,19 +135,5 @@ class EditProfileActivity : AppCompatActivity() {
             ""
         }
     }
-    private fun showCustomPopup(message: String) {
-        val dialog = android.app.Dialog(this)
-        dialog.setContentView(R.layout.custom_popup)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val tvMessage = dialog.findViewById<android.widget.TextView>(R.id.tvPopupMessage)
-        tvMessage.text = message
-        dialog.show()
-
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            if (dialog.isShowing) {
-                dialog.dismiss()
-            }
-        }, 2000)
-    }
 }

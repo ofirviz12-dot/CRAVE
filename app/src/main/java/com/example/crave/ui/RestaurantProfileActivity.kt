@@ -2,15 +2,17 @@ package com.example.crave
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.crave.adapters.MenuAdapter
+import com.example.crave.adapters.ProfileGridAdapter
 import com.example.crave.databinding.ActivityRestaurantProfileBinding
-import com.example.crave.ui.AddPostFragment
+import com.example.crave.models.MenuItem
+import com.example.crave.models.Post
+import com.example.crave.utils.loadImage
+import com.example.crave.utils.showCustomPopup
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -45,10 +47,9 @@ class RestaurantProfileActivity : AppCompatActivity() {
         binding.tvProfileName.text = restName
         binding.tvProfileCuisine.text = "$restCategory • $restAddress"
 
-        loadImage(restImage)
+        binding.ivHeaderImage.loadImage(restImage, isCircular = false, fallbackResId = android.R.drawable.ic_menu_gallery)
         setupRecyclerView(restName)
 
-        android.util.Log.d("MENU_TEST", "The received Restaurant ID is: $restId")
 
         binding.btnBack.setOnClickListener {
             finish()
@@ -66,38 +67,24 @@ class RestaurantProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadImage(imageUrl: String) {
-        if (imageUrl.isNotEmpty()) {
-            try {
-                if (imageUrl.startsWith("http")) {
-                    Glide.with(this).load(imageUrl).into(binding.ivHeaderImage)
-                } else {
-                    val cleanBase64 = if (imageUrl.contains("base64,")) {
-                        imageUrl.substringAfter("base64,")
-                    } else {
-                        imageUrl
-                    }
-
-                    val imageBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
-                    Glide.with(this).asBitmap().load(imageBytes).into(binding.ivHeaderImage)
-                }
-            } catch (e: Exception) {
-                binding.ivHeaderImage.setImageResource(android.R.drawable.ic_menu_gallery)
-            }
-        }
-    }
 
     private fun setupRecyclerView(restaurantName: String) {
         binding.rvUserPhotos.layoutManager = GridLayoutManager(this, 3)
 
+        val formattedName = restaurantName.split(" ").joinToString(" ") { word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
+
         db.collection("posts")
-            .whereEqualTo("restaurantName", restaurantName)
+           // .whereEqualTo("restaurantName", formattedName)
             .get()
             .addOnSuccessListener { documents ->
                 val postList = mutableListOf<Post>()
                 for (document in documents) {
                     val post = document.toObject(Post::class.java).copy(id = document.id)
+                    if (post.restaurantName.equals(restaurantName, ignoreCase = true)) {
                     postList.add(post)
+                    }
                 }
 
                 val adapter = ProfileGridAdapter(postList) { selectedPost ->
@@ -116,7 +103,7 @@ class RestaurantProfileActivity : AppCompatActivity() {
                 binding.rvUserPhotos.adapter = adapter
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Could not load photos", Toast.LENGTH_SHORT).show()
+                showCustomPopup("Could not load photos")
             }
     }
 
@@ -138,7 +125,6 @@ class RestaurantProfileActivity : AppCompatActivity() {
         db.collection("restaurants").document(restaurantId).collection("menu")
             .get()
             .addOnSuccessListener { documents ->
-                android.util.Log.d("MENU_TEST", "Number of menu items found: ${documents.size()}")
 
                 val menuList = mutableListOf<MenuItem>()
                 for (document in documents) {
@@ -151,7 +137,7 @@ class RestaurantProfileActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 android.util.Log.e("MENU_TEST", "Error loading menu", exception)
-                Toast.makeText(this, "error loading menu", Toast.LENGTH_SHORT).show()
+                showCustomPopup("error loading menu")
             }
     }
     private fun isRestaurantOpenProfile(openTime: String, closeTime: String): Boolean {

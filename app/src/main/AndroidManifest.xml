@@ -30,7 +30,7 @@
         <activity
             android:name=".PostDetailActivity" />
         <activity
-            android:name=".EditProfileActivity" />
+            android:name=".ui.EditProfileActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

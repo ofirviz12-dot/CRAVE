@@ -1,10 +1,12 @@
-package com.example.crave
+package com.example.crave.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.crave.models.MenuItem
+import com.example.crave.R
 
 class MenuAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<MenuAdapter.MenuViewHolder>() {
 
@@ -25,13 +27,7 @@ class MenuAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<
         holder.tvItemName.text = item.name
         holder.tvItemDesc.text = item.description
 
-        val displayPrice = if (item.price % 1 == 0.0) {
-            item.price.toInt().toString()
-        } else {
-            item.price.toString()
-        }
-
-        holder.tvItemPrice.text = "₪${displayPrice}"
+        holder.tvItemPrice.text = "₪${item.getFormattedPrice()}"
     }
 
     override fun getItemCount() = menuItems.size
