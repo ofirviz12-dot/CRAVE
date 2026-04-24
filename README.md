@@ -42,6 +42,7 @@ The project follows a clean, package-based architecture to ensure scalability an
 ## 🎞️ App Demo (Visuals)
 
 ### 1. Social Feed & Posting
+![Feed Screen](20260424_164819.png)
 
 ### 2. Restaurant Profiles & Menus
 
