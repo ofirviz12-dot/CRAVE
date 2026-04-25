@@ -9,6 +9,7 @@
 The main goal of CRAVE is to create an inclusive social space in the food domain, where even users without a large following can gain visibility and value. Users visit restaurants, capture and share their meals, and earn digital coins based on the engagement their posts receive (such as likes). These coins can later be used toward future purchases.
 
 Additionally, user-generated content may be used by participating restaurants on their social media platforms, creating a mutually beneficial collaboration between customers and businesses.
+*
 * **AI-Powered Analysis**: The app uses AI to analyze food images, identify ingredients, and match dishes to various dietary preferences (e.g., vegan, keto, vegetarian).
 ---
 
@@ -18,11 +19,11 @@ The project follows a clean, package-based architecture to ensure scalability an
 * **`ui`**: Contains all Activities and Fragments (Feed, Profile, Restaurant Details, and Wallet).
 * **`models`**: Data classes representing system objects (`Post`, `User`, `Comment`, `MenuItem`).
 * **`adapters`**: Mediators for RecyclerViews (Post Feed, Menu List, Comment Section).
-* **`utils`**: Helper classes for global functions (Glide image loading, custom UI popups, and date formatting).
+* **`utils`**: Helper classes for global functions.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech 
 * **Language**: Kotlin
 * **Database**: Firebase Firestore 
 * **Image Processing**: Glide & ImageUtils
@@ -34,7 +35,7 @@ The project follows a clean, package-based architecture to ensure scalability an
 ## ✨ Key Features
 * **Dynamic Feed**: Real-time social feed with likes and comments.
 * **Smart Restaurant Profiles**: View opening hours, and full digital menus.
-* **Gamified Wallet**: Earn "Crave Coins" based on post engagement (likes). Redeem coins for unique generated coupon codes.
+* **Gamified Wallet**: Earn "Crave Coins" based on post engagement -likes. Redeem coins for unique generated coupon codes.
 * **AI Integration**: Automated nutritional analysis of food posts.
 
 ---
@@ -58,7 +59,7 @@ The project follows a clean, package-based architecture to ensure scalability an
   <img src="20260424_164657.png" width="250"/>
 </p>
 
-### 4.AI Food Analysis
+### 4. AI Food Analysis
 <p align="start">
   <img src="20260424_170520.png" width="250"/>
 </p>
