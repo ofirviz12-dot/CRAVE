@@ -76,7 +76,6 @@ class RestaurantProfileActivity : AppCompatActivity() {
         }
 
         db.collection("posts")
-           // .whereEqualTo("restaurantName", formattedName)
             .get()
             .addOnSuccessListener { documents ->
                 val postList = mutableListOf<Post>()

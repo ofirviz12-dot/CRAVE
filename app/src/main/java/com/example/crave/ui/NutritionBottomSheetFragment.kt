@@ -24,23 +24,19 @@ class NutritionBottomSheetFragment(private val post: Post) : BottomSheetDialogFr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // הצגת הערכים הבסיסיים
         binding.tvDishName.text = post.detectedDish
         binding.tvCalories.text = post.calories
         binding.tvProtein.text = post.protein
         binding.tvCarbs.text = post.carbs
         binding.tvFat.text = post.fat
 
-        // טיפול ברשימת המרכיבים - הפיכה לפורמט קריא יותר
         if (post.ingredients.isNotEmpty()) {
             binding.tvIngredients.text = post.ingredients.joinToString(separator = ", ")
         } else {
             binding.tvIngredients.text = "Information not available"
         }
 
-        // טיפול בתוויות דיאטה
         if (post.dietLabels.isNotEmpty()) {
-            // הוספת סימן מפריד יפה בין התוויות
             binding.tvDietLabels.text = post.dietLabels.joinToString("  •  ")
         } else {
             binding.tvDietLabels.text = "General Food"
