@@ -64,6 +64,8 @@ The project follows a clean, package-based architecture to ensure scalability an
   <img src="20260424_170520.png" width="250"/>
 </p>
 
+### VIDEO
+https://drive.google.com/file/d/1PYZYfwoGXkPkQFYUPrgSpForynx_qetq/view?usp=sharing
 ---
 
 ## 🚀 Installation
